@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPBU 74.912.01 Maccorawalie — Sistem Manajemen</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#CC0001;--red-light:#FFF5F5;--red-dark:#A80001;
+  --orange:#ED8936;--orange-light:#FFFAF0;
+  --blue:#3182CE;--blue-light:#EBF8FF;--blue-dark:#2C5282;
+  --green:#38A169;--green-light:#F0FFF4;--green-dark:#276749;
+  --purple:#805AD5;--purple-light:#FAF5FF;
+  --teal:#319795;--teal-light:#E6FFFA;
+  --gray-50:#F7FAFC;--gray-100:#EDF2F7;--gray-200:#E2E8F0;
+  --gray-300:#CBD5E0;--gray-400:#A0AEC0;--gray-500:#718096;
+  --gray-600:#4A5568;--gray-700:#2D3748;--gray-800:#1A202C;
+  --white:#FFFFFF;
+  --sidebar-w:250px;--header-h:60px;
+  --font:'Segoe UI',system-ui,sans-serif;
+}
+body{font-family:var(--font);background:var(--gray-50);color:var(--gray-700);min-height:100vh;font-size:14px}
+#login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#CC0001 0%,#7B0000 100%)}
+.login-card{background:var(--white);border-radius:16px;padding:40px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,0.25)}
+.login-logo{text-align:center;margin-bottom:26px}
+.login-logo-icon{width:62px;height:62px;background:#CC0001;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;box-shadow:0 4px 14px rgba(204,0,1,0.4)}
+.login-logo .brand{font-size:17px;font-weight:700;color:#CC0001;line-height:1.2}
+.login-logo .sub{font-size:11px;color:var(--gray-500);margin-top:3px}
+.login-logo .spbu-id{font-size:12px;font-weight:600;color:var(--gray-600);margin-top:6px;background:var(--gray-100);padding:3px 12px;border-radius:20px;display:inline-block}
+.login-role-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:18px}
+.role-btn{border:2px solid var(--gray-200);border-radius:10px;padding:11px 6px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--white)}
+.role-btn:hover,.role-btn.active{border-color:#CC0001;background:var(--red-light)}
+.role-btn i{font-size:22px;display:block;margin-bottom:4px;color:var(--gray-400)}
+.role-btn.active i{color:#CC0001}
+.role-btn span{font-size:11px;font-weight:600;color:var(--gray-600)}
+.role-btn.active span{color:#CC0001}
+.form-group{margin-bottom:13px}
+.form-group label{display:block;font-size:11px;font-weight:600;color:var(--gray-600);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px}
+.form-control{width:100%;padding:9px 13px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;font-family:var(--font);transition:border-color 0.2s;outline:none}
+.form-control:focus{border-color:#CC0001}
+.btn-login{width:100%;padding:12px;background:#CC0001;color:var(--white);border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.2s}
+.btn-login:hover{background:var(--red-dark)}
+.login-hint{margin-top:13px;padding:9px;background:var(--gray-50);border-radius:8px;font-size:11px;color:var(--gray-500)}
+#app{display:none;min-height:100vh;flex-direction:column}
+#app.visible{display:flex}
+.header{height:var(--header-h);background:var(--white);border-bottom:1px solid var(--gray-200);display:flex;align-items:center;padding:0 18px;gap:12px;position:sticky;top:0;z-index:100}
+.header-logo{font-size:14px;font-weight:700;color:#CC0001;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.header-logo .sub{font-weight:400;color:var(--gray-500);font-size:12px}
+.header-spacer{flex:1}
+.header-user{display:flex;align-items:center;gap:9px}
+.user-badge{display:flex;align-items:center;gap:7px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:500}
+.badge-owner{background:#FFF8E1;color:#F57F17}
+.badge-manager{background:#E8F5E9;color:#2E7D32}
+.badge-operator{background:var(--blue-light);color:var(--blue-dark)}
+.btn-logout{padding:5px 11px;border:1.5px solid var(--gray-200);border-radius:8px;background:transparent;cursor:pointer;font-size:12px;color:var(--gray-600);display:flex;align-items:center;gap:5px;transition:all 0.2s}
+.btn-logout:hover{border-color:var(--red);color:var(--red)}
+.app-body{display:flex;flex:1}
+.sidebar{width:var(--sidebar-w);background:var(--white);border-right:1px solid var(--gray-200);padding:12px 9px;position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));overflow-y:auto;flex-shrink:0}
+.sidebar-section{margin-bottom:16px}
+.sidebar-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--gray-400);padding:0 8px;margin-bottom:5px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:8px;cursor:pointer;color:var(--gray-600);font-size:12px;font-weight:500;transition:all 0.15s;border:none;background:none;width:100%;text-align:left}
+.nav-item i{font-size:16px;width:19px;text-align:center;flex-shrink:0}
+.nav-item:hover{background:var(--gray-50);color:var(--gray-800)}
+.nav-item.active{background:#FFF0F0;color:#CC0001}
+.nav-item.active i{color:#CC0001}
+.main{flex:1;padding:18px;overflow-y:auto;max-width:calc(100% - var(--sidebar-w))}
+.page{display:none}
+.page.active{display:block}
+.page-header{margin-bottom:18px}
+.page-title{font-size:18px;font-weight:700;color:var(--gray-800)}
+.page-subtitle{font-size:12px;color:var(--gray-500);margin-top:3px}
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:13px;margin-bottom:18px}
+.metric-card{background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:15px;position:relative;overflow:hidden}
+.metric-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:4px 0 0 4px}
+.metric-card.red::before{background:#CC0001}
+.metric-card.green::before{background:var(--green)}
+.metric-card.blue::before{background:var(--blue)}
+.metric-card.orange::before{background:var(--orange)}
+.metric-card.purple::before{background:var(--purple)}
+.metric-card.teal::before{background:var(--teal)}
+.metric-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--gray-500);margin-bottom:5px}
+.metric-value{font-size:18px;font-weight:700;color:var(--gray-800);line-height:1}
+.metric-sub{font-size:11px;color:var(--gray-500);margin-top:4px}
+.metric-icon{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-size:26px;color:var(--gray-200)}
+.card{background:var(--white);border:1px solid var(--gray-200);border-radius:12px;margin-bottom:16px}
+.card-header{padding:13px 17px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px}
+.card-title{font-size:13px;font-weight:600;color:var(--gray-800);display:flex;align-items:center;gap:7px}
+.card-body{padding:17px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{padding:8px 11px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--gray-500);background:var(--gray-50);border-bottom:1px solid var(--gray-200);white-space:nowrap}
+tbody td{padding:9px 11px;border-bottom:1px solid var(--gray-100);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--gray-50)}
+tfoot td{padding:9px 11px;border-top:2px solid var(--gray-200);font-weight:700;background:var(--gray-50)}
+.text-right{text-align:right}
+.text-center{text-align:center}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;margin-bottom:12px}
+.input-group{display:flex;flex-direction:column;gap:4px}
+.input-group label{font-size:10px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.4px}
+.input-group input,.input-group select,.input-group textarea{padding:7px 10px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:12px;font-family:var(--font);outline:none;transition:border-color 0.2s;background:var(--white);color:var(--gray-700)}
+.input-group input:focus,.input-group select:focus,.input-group textarea:focus{border-color:#CC0001}
+.input-group input[readonly]{background:var(--gray-50);color:var(--gray-500)}
+.input-group textarea{min-height:65px;resize:vertical}
+.bbm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin-bottom:14px}
+.bbm-card{background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:9px;padding:11px}
+.bbm-card.active{background:var(--red-light);border-color:#CC0001}
+.bbm-card .bbm-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--gray-600);margin-bottom:7px}
+.bbm-card.active .bbm-name{color:#CC0001}
+.bbm-input-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.bbm-input-row label{font-size:10px;color:var(--gray-500);min-width:50px}
+.bbm-input-row input{flex:1;padding:5px 7px;border:1px solid var(--gray-300);border-radius:6px;font-size:11px;outline:none}
+.bbm-input-row input:focus{border-color:#CC0001}
+.btn{padding:7px 15px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font);display:inline-flex;align-items:center;gap:6px;transition:all 0.2s}
+.btn-primary{background:#CC0001;color:var(--white)}
+.btn-primary:hover{background:var(--red-dark)}
+.btn-secondary{background:var(--gray-100);color:var(--gray-700)}
+.btn-secondary:hover{background:var(--gray-200)}
+.btn-success{background:var(--green);color:var(--white)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-icon{padding:6px;border-radius:7px;background:var(--gray-100);color:var(--gray-600);border:none;cursor:pointer;display:inline-flex;align-items:center;transition:all 0.2s}
+.btn-icon:hover{background:var(--gray-200)}
+.btn-icon.danger:hover{background:var(--red-light);color:var(--red)}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap}
+.badge-success{background:var(--green-light);color:var(--green-dark)}
+.badge-danger{background:var(--red-light);color:var(--red-dark)}
+.badge-warning{background:var(--orange-light);color:#C05621}
+.badge-info{background:var(--blue-light);color:var(--blue-dark)}
+.badge-gray{background:var(--gray-100);color:var(--gray-600)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:14px;padding:22px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.modal-title{font-size:14px;font-weight:700;color:var(--gray-800)}
+.modal-close{background:none;border:none;cursor:pointer;font-size:21px;color:var(--gray-400);line-height:1}
+.modal-close:hover{color:var(--gray-700)}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;padding-top:12px;border-top:1px solid var(--gray-100)}
+.divider{height:1px;background:var(--gray-100);margin:14px 0}
+.chart-container{position:relative;height:230px}
+.alert{padding:10px 13px;border-radius:8px;font-size:12px;display:flex;align-items:center;gap:8px;margin-bottom:13px}
+.alert-success{background:var(--green-light);color:var(--green-dark);border:1px solid #C6F6D5}
+.alert-danger{background:var(--red-light);color:var(--red-dark);border:1px solid #FED7D7}
+.alert-info{background:var(--blue-light);color:var(--blue-dark);border:1px solid #BEE3F8}
+.alert-warning{background:var(--orange-light);color:#C05621;border:1px solid #FBD38D}
+.report-filter{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:16px}
+.report-filter select,.report-filter input{padding:6px 10px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:12px;font-family:var(--font);outline:none}
+.report-filter select:focus,.report-filter input:focus{border-color:#CC0001}
+.lr-table{width:100%;font-size:12px;border-collapse:collapse}
+.lr-table tr td{padding:8px 13px;border-bottom:1px solid var(--gray-100)}
+.lr-table .section-header td{background:var(--gray-50);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--gray-600);padding:8px 13px}
+.lr-table .total-row td{font-weight:700;border-top:2px solid var(--gray-300);padding-top:9px}
+.lr-table .highlight-green td{background:var(--green-light);color:var(--green-dark);font-weight:700}
+.lr-table .highlight-red td{background:var(--red-light);color:var(--red-dark);font-weight:700}
+.lr-table .indent td:first-child{padding-left:26px;color:var(--gray-600)}
+.stock-tag{font-size:10px;font-weight:600;padding:2px 6px;border-radius:9px;display:inline-block}
+.tag-pertalite{background:#E8F5E9;color:#1B5E20}
+.tag-pertamax{background:#E3F2FD;color:#0D47A1}
+.tag-solar{background:#FFF3E0;color:#E65100}
+.tag-dexlite{background:#F3E5F5;color:#4A148C}
+.tag-pxturbo{background:#FCE4EC;color:#880E4F}
+.tag-plk{background:#ECEFF1;color:#37474F}
+.cf-positive{color:var(--green-dark);font-weight:600}
+.cf-negative{color:var(--red);font-weight:600}
+.penerimaan-fill{background:#F0FFF4;color:#276749;font-weight:600}
+.empty-state{text-align:center;padding:38px 18px;color:var(--gray-400)}
+.empty-state i{font-size:42px;display:block;margin-bottom:9px}
+.empty-state p{font-size:12px}
+.ampra-scroll{overflow-x:auto;max-height:400px;overflow-y:auto}
+@media(max-width:768px){.sidebar{display:none}.main{padding:11px;max-width:100%}.metrics-grid{grid-template-columns:1fr 1fr}.form-row{grid-template-columns:1fr}}
+@media print{.sidebar,.header,.btn,.report-filter,.btn-icon{display:none!important}.main{padding:0;max-width:100%}body{background:var(--white)}}
+</style>
+</head>
+<body>
+<!-- LOGIN -->
+<div id="login-page">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon"><i class="ti ti-gas-station" style="font-size:29px;color:#fff"></i></div>
+      <div class="brand">PT. BINTANG IFATMAN MANDIRI</div>
+      <div class="sub">SPBU Maccorawalie Kab. Pinrang</div>
+      <div class="spbu-id">74.912.01</div>
+    </div>
+    <div class="form-group">
+      <label>Pilih Peran Akses</label>
+      <div class="login-role-grid">
+        <div class="role-btn active" onclick="selectRole('owner',this)"><i class="ti ti-crown"></i><span>Owner</span></div>
+        <div class="role-btn" onclick="selectRole('manager',this)"><i class="ti ti-briefcase"></i><span>Manager</span></div>
+        <div class="role-btn" onclick="selectRole('operator',this)"><i class="ti ti-user-cog"></i><span>Operator</span></div>
+      </div>
+    </div>
+    <div class="form-group"><label>Username</label><input type="text" id="login-user" class="form-control" value="owner"></div>
+    <div class="form-group"><label>Password</label><input type="password" id="login-pass" class="form-control" value="1234"></div>
+    <button class="btn-login" onclick="doLogin()"><i class="ti ti-login" style="vertical-align:-2px;margin-right:8px"></i>Masuk ke Sistem</button>
+    <div class="login-hint">Demo: pilih peran → password <strong>1234</strong></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <header class="header">
+    <div class="header-logo">
+      <i class="ti ti-gas-station" style="font-size:18px;color:#CC0001"></i>
+      SPBU 74.912.01 Maccorawalie
+      <span class="sub">| Kab. Pinrang</span>
+    </div>
+    <div class="header-spacer"></div>
+    <div class="header-user">
+      <div id="user-badge" class="user-badge badge-owner"><i class="ti ti-crown" style="font-size:13px"></i><span id="user-name">Owner</span></div>
+      <button class="btn-logout" onclick="doLogout()"><i class="ti ti-logout" style="font-size:13px"></i>Keluar</button>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <aside class="sidebar">
+      <div class="sidebar-section" id="nav-operator">
+        <div class="sidebar-label">Operator</div>
+        <button class="nav-item" onclick="showPage('input-harian')" data-page="input-harian"><i class="ti ti-file-plus"></i>Input Data Harian</button>
+        <button class="nav-item" onclick="showPage('input-ampra')" data-page="input-ampra"><i class="ti ti-droplet-filled"></i>Input Ampra BBM</button>
+      </div>
+      <div class="sidebar-section" id="nav-manager">
+        <div class="sidebar-label">Manager</div>
+        <button class="nav-item" onclick="showPage('monitor-penjualan')" data-page="monitor-penjualan"><i class="ti ti-eye"></i>Monitor Penjualan</button>
+        <button class="nav-item" onclick="showPage('laporan-stock')" data-page="laporan-stock"><i class="ti ti-stack"></i>Laporan Stock</button>
+        <button class="nav-item" onclick="showPage('laporan-ampra')" data-page="laporan-ampra"><i class="ti ti-droplet-filled"></i>Laporan Ampra</button>
+        <button class="nav-item" onclick="showPage('edit-transaksi')" data-page="edit-transaksi"><i class="ti ti-edit"></i>Edit Transaksi</button>
+      </div>
+      <div class="sidebar-section" id="nav-owner">
+        <div class="sidebar-label">Owner</div>
+        <button class="nav-item" onclick="showPage('dashboard')" data-page="dashboard"><i class="ti ti-dashboard"></i>Dashboard</button>
+        <button class="nav-item" onclick="showPage('daily-report')" data-page="daily-report"><i class="ti ti-calendar-stats"></i>Daily Report</button>
+        <button class="nav-item" onclick="showPage('monthly-report')" data-page="monthly-report"><i class="ti ti-chart-bar"></i>Monthly Report</button>
+        <button class="nav-item" onclick="showPage('laba-rugi')" data-page="laba-rugi"><i class="ti ti-report-money"></i>Laba Rugi</button>
+        <button class="nav-item" onclick="showPage('cashflow')" data-page="cashflow"><i class="ti ti-arrows-exchange"></i>Dana Pengadaan BBM</button>
+        <button class="nav-item" onclick="showPage('biaya')" data-page="biaya"><i class="ti ti-receipt"></i>Laporan Biaya</button>
+        <button class="nav-item" onclick="showPage('gaji')" data-page="gaji"><i class="ti ti-cash"></i>Gaji Karyawan</button>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <!-- OPERATOR: INPUT HARIAN -->
+      <div class="page" id="page-input-harian">
+        <div class="page-header"><div class="page-title">Input Data Harian</div><div class="page-subtitle">Input penjualan BBM, stock tangki, dan biaya harian — SPBU 74.912.01</div></div>
+        <div id="alert-input" style="display:none"></div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-calendar"></i>Tanggal & Operator</div></div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="input-group"><label>Tanggal</label><input type="date" id="h-tgl"></div>
+              <div class="input-group"><label>Nama Operator</label><select id="h-operator"><option>Gazali</option><option>Operator A</option><option>Operator B</option></select></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-droplet"></i>Volume Penjualan BBM Hari Ini</div></div>
+          <div class="card-body">
+            <div class="bbm-grid" id="bbm-input-grid"></div>
+            <div class="alert alert-info"><i class="ti ti-calculator"></i><span id="total-penjualan-text">Total penjualan akan dihitung otomatis</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-bucket"></i>Stock BBM & Kontrol Tangki</div></div>
+          <div class="card-body">
+            <p style="font-size:11px;color:var(--gray-500);margin-bottom:12px">Per jenis BBM: Stock Awal, Minyak Masuk (penerimaan hari ini), dan Stock Akhir</p>
+            <div id="stock-input-area"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-wallet"></i>Saldo Kas & Rekening</div></div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="input-group"><label>Saldo Kas (Rp)</label><input type="number" id="h-saldo-kas" placeholder="0"></div>
+              <div class="input-group"><label>Saldo Rek. Ampra (Rp)</label><input type="number" id="h-saldo-ampra" placeholder="0"></div>
+              <div class="input-group"><label>EDC & Sisa Saldo (Rp)</label><input type="number" id="h-edc" placeholder="0"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-minus-circle"></i>Biaya Operasional Harian</div></div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="input-group"><label>Biaya SPBU (Rp)</label><input type="number" id="h-biaya-spbu" placeholder="0"></div>
+              <div class="input-group"><label>Faktur BBM (Rp)</label><input type="number" id="h-faktur" placeholder="0"></div>
+              <div class="input-group"><label>BBM Operasional (Rp)</label><input type="number" id="h-bbm-ops" placeholder="0"></div>
+            </div>
+            <div class="form-row">
+              <div class="input-group"><label>Nota SPBU (Rp)</label><input type="number" id="h-nota" placeholder="0"></div>
+              <div class="input-group"><label>Gaji Karyawan (Rp)</label><input type="number" id="h-gaji" placeholder="0"></div>
+              <div class="input-group"><label>Lain-lain (Rp)</label><input type="number" id="h-lain" placeholder="0"></div>
+            </div>
+            <div class="input-group"><label>Keterangan</label><textarea id="h-ket-biaya" placeholder="Rinci biaya lain-lain..."></textarea></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-credit-card"></i>Piutang & Dana</div></div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="input-group"><label>Piutang (Rp)</label><input type="number" id="h-piutang" placeholder="0"></div>
+              <div class="input-group"><label>Tambahan Dana (Rp)</label><input type="number" id="h-tambahan" placeholder="0"></div>
+              <div class="input-group"><label>My Pertamina (Rp)</label><input type="number" id="h-mypertamina" placeholder="0"></div>
+              <div class="input-group"><label>Pajak + By Ampra (Rp)</label><input type="number" id="h-pajak-ampra" placeholder="0"></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:9px;justify-content:flex-end;margin-top:4px">
+          <button class="btn btn-secondary" onclick="resetInputHarian()"><i class="ti ti-refresh"></i>Reset</button>
+          <button class="btn btn-primary" onclick="simpanHarian()"><i class="ti ti-device-floppy"></i>Simpan Data Harian</button>
+        </div>
+      </div>
+
+      <!-- OPERATOR: INPUT AMPRA -->
+      <div class="page" id="page-input-ampra">
+        <div class="page-header"><div class="page-title">Input Ampra BBM</div><div class="page-subtitle">Catat ampra BBM ke Pertamina dan penerimaan BBM hari ini</div></div>
+        <div id="alert-ampra" style="display:none"></div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-calendar-plus"></i>Tanggal Ampra</div></div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="input-group"><label>Tanggal</label><input type="date" id="a-tgl"></div>
+              <div class="input-group"><label>No. Urut</label><input type="number" id="a-no" placeholder="1" min="1" max="31"></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="ti ti-droplet-filled" style="color:#CC0001"></i>Ampra BBM (Liter)</div></div>
+            <div class="card-body"><div id="ampra-bbm-inputs"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="ti ti-truck" style="color:var(--green)"></i>Penerimaan BBM (Liter)</div></div>
+            <div class="card-body"><div id="penerimaan-bbm-inputs"></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-file-invoice" style="color:var(--blue)"></i>D/O di Pertamina (Liter)</div></div>
+          <div class="card-body"><div id="do-bbm-inputs"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-notes"></i>Catatan</div></div>
+          <div class="card-body"><div class="input-group"><label>Keterangan</label><textarea id="a-ket" placeholder="Kredit Pertamax, catatan khusus, dll..."></textarea></div></div>
+        </div>
+        <div style="display:flex;gap:9px;justify-content:flex-end">
+          <button class="btn btn-secondary" onclick="resetAmpra()"><i class="ti ti-refresh"></i>Reset</button>
+          <button class="btn btn-primary" onclick="simpanAmpra()"><i class="ti ti-device-floppy"></i>Simpan</button>
+        </div>
+      </div>
+
+      <!-- MANAGER: MONITOR PENJUALAN -->
+      <div class="page" id="page-monitor-penjualan">
+        <div class="page-header"><div class="page-title">Monitor Penjualan</div><div class="page-subtitle">Data penjualan harian seluruh jenis BBM — Maret 2026</div></div>
+        <div class="report-filter">
+          <select id="mon-bulan" onchange="renderMonitor()"><option value="3" selected>Maret 2026</option></select>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric-card green"><div class="metric-label">Total Omset</div><div class="metric-value">Rp 8,11 M</div><div class="metric-sub">Maret 2026</div><i class="ti ti-coin metric-icon"></i></div>
+          <div class="metric-card blue"><div class="metric-label">Pertalite</div><div class="metric-value">518.138 L</div><div class="metric-sub">Rp 5,18 M</div><i class="ti ti-droplet metric-icon"></i></div>
+          <div class="metric-card orange"><div class="metric-label">Solar</div><div class="metric-value">264.600 L</div><div class="metric-sub">Rp 1,80 M</div><i class="ti ti-flame metric-icon"></i></div>
+          <div class="metric-card red"><div class="metric-label">Pertamax</div><div class="metric-value">80.337 L</div><div class="metric-sub">Rp 1,01 M</div><i class="ti ti-droplet-filled metric-icon"></i></div>
+          <div class="metric-card purple"><div class="metric-label">Dexlite</div><div class="metric-value">8.091 L</div><div class="metric-sub">Rp 117 Jt</div><i class="ti ti-bottle metric-icon"></i></div>
+          <div class="metric-card teal"><div class="metric-label">Total Losses Pertalite</div><div class="metric-value">-2.418 L</div><div class="metric-sub">Selisih stok-jual</div><i class="ti ti-arrows-diff metric-icon"></i></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-table"></i>Data Penjualan Harian</div></div>
+          <div class="card-body" style="padding:0">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Tgl</th><th class="text-right">Pertalite (L)</th><th class="text-right">Pertamax (L)</th><th class="text-right">Solar (L)</th><th class="text-right">Dexlite (L)</th><th class="text-right">Total Penjualan</th><th class="text-right">Biaya SPBU</th><th class="text-right">Margin Kotor</th></tr></thead>
+                <tbody id="monitor-tbody"></tbody>
+                <tfoot id="monitor-tfoot"></tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MANAGER: LAPORAN STOCK -->
+      <div class="page" id="page-laporan-stock">
+        <div class="page-header"><div class="page-title">Laporan Stock BBM</div><div class="page-subtitle">Stock Awal, Minyak Masuk, Penjualan, Stock Akhir, dan Losses harian</div></div>
+        <div class="report-filter">
+          <select id="stock-bulan" onchange="renderStock()"><option value="3" selected>Maret 2026</option></select>
+          <select id="stock-jenis" onchange="renderStock()">
+            <option value="pertalite">Pertalite</option>
+            <option value="pertamax">Pertamax</option>
+            <option value="solar">Solar</option>
+            <option value="dexlite">Dexlite</option>
+          </select>
+        </div>
+        <div class="metrics-grid" id="stock-metrics"></div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-stack"></i>Detail Stock Harian</div></div>
+          <div class="card-body" style="padding:0">
+            <div class="ampra-scroll">
+              <table>
+                <thead><tr><th class="text-center">Tgl</th><th class="text-right">Stock Awal (L)</th><th class="text-right">Masuk (L)</th><th class="text-right">Terjual (L)</th><th class="text-right">Stock Akhir (L)</th><th class="text-right">Losses (L)</th><th>Status</th></tr></thead>
+                <tbody id="stock-tbody"></tbody>
+                <tfoot id="stock-tfoot"></tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MANAGER: LAPORAN AMPRA -->
+      <div class="page" id="page-laporan-ampra">
+        <div class="page-header"><div class="page-title">Laporan Ampra BBM</div><div class="page-subtitle">Jadwal ampra, penerimaan BBM, dan D/O di Pertamina — Maret 2026 (sampel data)</div></div>
+        <div class="report-filter"><select id="ampra-bulan" onchange="renderAmpra()"><option value="3" selected>Maret 2026</option></select></div>
+        <div class="metrics-grid">
+          <div class="metric-card blue"><div class="metric-label">Total Ampra Pertamax</div><div class="metric-value">88.000 L</div><div class="metric-sub">31 hari Maret</div></div>
+          <div class="metric-card green"><div class="metric-label">Total Ampra Pertalite</div><div class="metric-value">512.000 L</div><div class="metric-sub">31 hari Maret</div></div>
+          <div class="metric-card orange"><div class="metric-label">Total Ampra Solar</div><div class="metric-value">264.000 L</div><div class="metric-sub">31 hari Maret</div></div>
+          <div class="metric-card purple"><div class="metric-label">Total Terima Pertamax</div><div class="metric-value">80.000 L</div><div class="metric-sub">Penerimaan Maret</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-table"></i>Tabel Ampra & Penerimaan BBM (Sampel)</div></div>
+          <div class="card-body" style="padding:0">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="text-center" rowspan="2">No</th>
+                    <th colspan="5" class="text-center" style="border-right:2px solid var(--gray-200)">Ampra BBM (Liter)</th>
+                    <th colspan="4" class="text-center" style="border-right:2px solid var(--gray-200)">Penerimaan BBM (Liter)</th>
+                    <th>Ket.</th>
+                  </tr>
+                  <tr>
+                    <th class="text-right">Pertalite</th>
+                    <th class="text-right">Pertamax</th>
+                    <th class="text-right">Solar</th>
+                    <th class="text-right">Dexlite</th>
+                    <th class="text-right" style="border-right:2px solid var(--gray-200)">PX Turbo</th>
+                    <th class="text-right">Pertalite</th>
+                    <th class="text-right">Pertamax</th>
+                    <th class="text-right" style="border-right:2px solid var(--gray-200)">Solar</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="ampra-tbody"></tbody>
+                <tfoot>
+                  <tr>
+                    <td>TOTAL</td>
+                    <td class="text-right">512.000</td><td class="text-right">88.000</td>
+                    <td class="text-right">264.000</td><td class="text-right">8.000</td>
+                    <td class="text-right">0</td>
+                    <td class="text-right">512.000</td><td class="text-right">80.000</td>
+                    <td class="text-right">264.000</td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MANAGER: EDIT TRANSAKSI -->
+      <div class="page" id="page-edit-transaksi">
+        <div class="page-header"><div class="page-title">Edit Transaksi</div><div class="page-subtitle">Koreksi data penjualan dan biaya harian</div></div>
+        <div class="report-filter"><select id="et-bulan" onchange="renderEditTable()"><option value="3" selected>Maret 2026</option></select></div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-list"></i>Daftar Transaksi</div></div>
+          <div class="card-body" style="padding:0">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Tgl</th><th class="text-right">Pertalite</th><th class="text-right">Pertamax</th><th class="text-right">Solar</th><th class="text-right">Dexlite</th><th class="text-right">Total Jual</th><th class="text-right">Biaya</th><th class="text-right">Laba</th><th class="text-center">Aksi</th></tr></thead>
+                <tbody id="et-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OWNER: DASHBOARD -->
+      <div class="page" id="page-dashboard">
+        <div class="page-header"><div class="page-title">Dashboard</div><div class="page-subtitle">Ringkasan kinerja SPBU 74.912.01 Maccorawalie — Maret 2026</div></div>
+        <div class="metrics-grid">
+          <div class="metric-card red"><div class="metric-label">Total Omset</div><div class="metric-value">Rp 8,11 M</div><div class="metric-sub">Maret 2026</div><i class="ti ti-coin metric-icon"></i></div>
+          <div class="metric-card green"><div class="metric-label">Laba Kotor</div><div class="metric-value">Rp 287 Jt</div><div class="metric-sub">Setelah HPP</div><i class="ti ti-trending-up metric-icon"></i></div>
+          <div class="metric-card orange"><div class="metric-label">Total Biaya</div><div class="metric-value">Rp 357 Jt</div><div class="metric-sub">Ops + Non Ops</div><i class="ti ti-minus-circle metric-icon"></i></div>
+          <div class="metric-card red"><div class="metric-label">Laba Bersih</div><div class="metric-value" style="color:var(--red)">-Rp 70 Jt</div><div class="metric-sub">Bunga bank dominan</div><i class="ti ti-report-money metric-icon"></i></div>
+          <div class="metric-card blue"><div class="metric-label">Volume BBM</div><div class="metric-value">871.166 L</div><div class="metric-sub">Semua jenis</div><i class="ti ti-droplet metric-icon"></i></div>
+          <div class="metric-card teal"><div class="metric-label">Modal Usaha Akhir</div><div class="metric-value">Rp 612 Jt</div><div class="metric-sub">31 Maret 2026</div><i class="ti ti-building-bank metric-icon"></i></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar"></i>Volume per Jenis BBM</div></div>
+            <div class="card-body"><div class="chart-container"><canvas id="chart-bbm-jenis" role="img" aria-label="Volume penjualan per jenis BBM Maret 2026">Data penjualan BBM</canvas></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="ti ti-chart-line"></i>Trend Penjualan Pertalite Harian</div></div>
+            <div class="card-body"><div class="chart-container"><canvas id="chart-trend" role="img" aria-label="Trend harian Pertalite">Trend penjualan</canvas></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-activity"></i>Ringkasan Komponen Keuangan Maret 2026</div></div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+              <div style="padding:12px;background:var(--gray-50);border-radius:10px">
+                <div style="font-size:10px;color:var(--gray-500);margin-bottom:7px;font-weight:700;text-transform:uppercase">Penjualan BBM</div>
+                <div style="font-size:12px;color:var(--gray-700);line-height:1.9">
+                  <div style="display:flex;justify-content:space-between"><span>Pertalite 518K L</span><span class="tag-pertalite">Rp 5,18 M</span></div>
+                  <div style="display:flex;justify-content:space-between"><span>Solar 264K L</span><span class="tag-solar">Rp 1,80 M</span></div>
+                  <div style="display:flex;justify-content:space-between"><span>Pertamax 80K L</span><span class="tag-pertamax">Rp 1,01 M</span></div>
+                  <div style="display:flex;justify-content:space-between"><span>Dexlite 8K L</span><span class="tag-dexlite">Rp 117 Jt</span></div>
+                </div>
+              </div>
+              <div style="padding:12px;background:var(--gray-50);border-radius:10px">
+                <div style="font-size:10px;color:var(--gray-500);margin-bottom:7px;font-weight:700;text-transform:uppercase">Biaya Operasional</div>
+                <div style="font-size:12px;color:var(--gray-700);line-height:1.9">
+                  <div style="display:flex;justify-content:space-between"><span>Gaji Karyawan</span><strong>Rp 96,4 Jt</strong></div>
+                  <div style="display:flex;justify-content:space-between"><span>BPJS</span><strong>Rp 12,9 Jt</strong></div>
+                  <div style="display:flex;justify-content:space-between"><span>Listrik</span><strong>Rp 10,3 Jt</strong></div>
+                  <div style="display:flex;justify-content:space-between"><span>Nota SPBU</span><strong>Rp 9,5 Jt</strong></div>
+                  <div style="display:flex;justify-content:space-between"><span>Pajak Ampra</span><strong>Rp 17,3 Jt</strong></div>
+                </div>
+              </div>
+              <div style="padding:12px;background:var(--gray-50);border-radius:10px">
+                <div style="font-size:10px;color:var(--gray-500);margin-bottom:7px;font-weight:700;text-transform:uppercase">Biaya Non Operasional</div>
+                <div style="font-size:12px;color:var(--gray-700);line-height:1.9">
+                  <div style="display:flex;justify-content:space-between"><span>Bunga BRI</span><strong style="color:var(--red)">Rp 127,5 Jt</strong></div>
+                  <div style="display:flex;justify-content:space-between"><span>KUR Anas</span><strong style="color:var(--red)">Rp 10,6 Jt</strong></div>
+                  <div style="display:flex;justify-content:space-between"><span>Talangan BTN</span><strong style="color:var(--red)">Rp 4,9 Jt</strong></div>
+                  <div style="display:flex;justify-content:space-between"><span>Nota Soreang</span><strong>Rp 11,8 Jt</strong></div>
+                  <div style="display:flex;justify-content:space-between"><span>Buka Bersama</span><strong>Rp 4,0 Jt</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OWNER: DAILY REPORT -->
+      <div class="page" id="page-daily-report">
+        <div class="page-header"><div class="page-title">Daily Report</div><div class="page-subtitle">Laporan lengkap harian: penjualan per BBM, stock, cashflow, laba</div></div>
+        <div class="report-filter">
+          <input type="date" id="dr-tgl" value="2026-03-01">
+          <button class="btn btn-primary btn-sm" onclick="renderDailyReport()"><i class="ti ti-search"></i>Tampilkan</button>
+          <button class="btn btn-secondary btn-sm" onclick="window.print()"><i class="ti ti-printer"></i>Cetak</button>
+        </div>
+        <div id="daily-content"></div>
+      </div>
+
+      <!-- OWNER: MONTHLY REPORT -->
+      <div class="page" id="page-monthly-report">
+        <div class="page-header"><div class="page-title">Monthly Report</div><div class="page-subtitle">Rekap bulanan: volume, omset, HPP, losses per jenis BBM</div></div>
+        <div class="report-filter">
+          <select id="mr-bulan" onchange="renderMonthlyReport()"><option value="3" selected>Maret 2026</option></select>
+          <button class="btn btn-secondary btn-sm" onclick="window.print()"><i class="ti ti-printer"></i>Cetak</button>
+        </div>
+        <div id="monthly-content"></div>
+      </div>
+
+      <!-- OWNER: LABA RUGI -->
+      <div class="page" id="page-laba-rugi">
+        <div class="page-header"><div class="page-title">Perhitungan Laba Rugi</div><div class="page-subtitle">SPBU 74.912.01 PT. Bintang Ifatman Mandiri Maccorawalie · Kab. Pinrang</div></div>
+        <div class="report-filter">
+          <select id="lr-bulan" onchange="renderLabaRugi()"><option value="3" selected>Maret 2026</option></select>
+          <button class="btn btn-secondary btn-sm" onclick="window.print()"><i class="ti ti-printer"></i>Cetak</button>
+        </div>
+        <div id="lr-content"></div>
+      </div>
+
+      <!-- OWNER: DANA PENGADAAN BBM -->
+      <div class="page" id="page-cashflow">
+        <div class="page-header"><div class="page-title">Laporan Keadaan Dana Pengadaan BBM</div><div class="page-subtitle">SPBU 74.912.01 Maccorawalie — Posisi dana kas, rekening, dan DO Pertamina harian</div></div>
+        <div class="report-filter"><select id="cf-bulan" onchange="renderCashflow()"><option value="3" selected>Maret 2026</option></select></div>
+        <div id="cashflow-content"></div>
+      </div>
+
+      <!-- OWNER: BIAYA -->
+      <div class="page" id="page-biaya">
+        <div class="page-header"><div class="page-title">Laporan Biaya Operasional & Non Operasional</div><div class="page-subtitle">Rincian pengeluaran SPBU per bulan</div></div>
+        <div class="report-filter"><select id="biaya-bulan" onchange="renderBiaya()"><option value="3" selected>Maret 2026</option></select></div>
+        <div id="biaya-content"></div>
+      </div>
+
+      <!-- OWNER: GAJI -->
+      <div class="page" id="page-gaji">
+        <div class="page-header"><div class="page-title">Gaji Karyawan</div><div class="page-subtitle">Rekap penggajian per bulan</div></div>
+        <div class="report-filter"><select id="gaji-bulan" onchange="renderGaji()"><option value="3" selected>Maret 2026</option></select></div>
+        <div id="gaji-content"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Edit Data Harian</div><button class="modal-close" onclick="closeModal()">&times;</button></div>
+    <div id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Batal</button>
+      <button class="btn btn-primary" onclick="saveEdit()"><i class="ti ti-device-floppy"></i>Simpan</button>
+    </div>
+  </div>
+</div>
+<script>
+const BBM=[
+  {key:'pertalite',nm:'Pertalite',hj:10000,hpp:9640,col:'#2E7D32',bg:'#E8F5E9',tag:'tag-pertalite'},
+  {key:'pertamax',nm:'Pertamax',hj:12600,hpp:11960,col:'#1565C0',bg:'#E3F2FD',tag:'tag-pertamax'},
+  {key:'solar',nm:'Solar',hj:6800,hpp:6538,col:'#E65100',bg:'#FFF3E0',tag:'tag-solar'},
+  {key:'dexlite',nm:'Dexlite',hj:14500,hpp:13885,col:'#4A148C',bg:'#F3E5F5',tag:'tag-dexlite'},
+  {key:'pxturbo',nm:'Pertamax Turbo',hj:13350,hpp:15020,col:'#880E4F',bg:'#FCE4EC',tag:'tag-pxturbo'},
+  {key:'plk',nm:'PLK (Pertlt. Khusus)',hj:0,hpp:0,col:'#37474F',bg:'#ECEFF1',tag:'tag-plk'},
+];
+const BBULAN=['','Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'];
+
+/* === DATA HARIAN MARET 2026 === dari sheet Penjualan + Biaya */
+const DH=[
+  {tgl:'2026-03-01',p:16784,px:1012,s:8157,dx:107,pxt:0,biaya:2007040,piutang:17838018,laba:10122885,kas:167705242,ampra:29023312},
+  {tgl:'2026-03-02',p:18282,px:1902,s:7996,dx:28,pxt:0,biaya:2289000,piutang:18566044,laba:11063942,kas:209014956,ampra:21417243},
+  {tgl:'2026-03-03',p:17147,px:1622,s:7411,dx:71,pxt:0,biaya:1428499,piutang:14359020,laba:9267347,kas:174558981,ampra:30903845},
+  {tgl:'2026-03-04',p:16347,px:1637,s:8941,dx:40,pxt:0,biaya:1287100,piutang:26923378,laba:9339742,kas:183073522,ampra:15066595},
+  {tgl:'2026-03-05',p:17683,px:2593,s:7658,dx:389,pxt:0,biaya:894340,piutang:28392276,laba:10660031,kas:209800084,ampra:29087526},
+  {tgl:'2026-03-06',p:16998,px:62,s:8288,dx:597,pxt:0,biaya:22486000,piutang:11892744,laba:9294571,kas:161198356,ampra:22635128},
+  {tgl:'2026-03-07',p:15431,px:2102,s:7799,dx:506,pxt:0,biaya:26958600,piutang:16129130,laba:9300968,kas:157126670,ampra:17629059},
+  {tgl:'2026-03-08',p:15662,px:1121,s:7971,dx:210,pxt:0,biaya:680500,piutang:8475256,laba:8573312,kas:135963644,ampra:963006},
+  {tgl:'2026-03-09',p:19896,px:972,s:12934,dx:200,pxt:0,biaya:11566000,piutang:13522857,laba:11296348,kas:192215543,ampra:17419937},
+  {tgl:'2026-03-10',p:17491,px:2418,s:11448,dx:561,pxt:0,biaya:14781500,piutang:20324370,laba:11188671,kas:220278830,ampra:18508868},
+  {tgl:'2026-03-11',p:17536,px:1302,s:7627,dx:0,pxt:0,biaya:1110000,piutang:9864950,laba:9144514,kas:176653850,ampra:695875},
+  {tgl:'2026-03-12',p:17346,px:1973,s:8257,dx:286,pxt:0,biaya:18473770,piutang:7315110,laba:9846504,kas:222625520,ampra:40422565},
+  {tgl:'2026-03-13',p:15387,px:2050,s:4882,dx:226,pxt:0,biaya:1070300,piutang:20712104,laba:8269394,kas:174018196,ampra:38282167},
+  {tgl:'2026-03-14',p:15673,px:2254,s:7654,dx:396,pxt:0,biaya:6077000,piutang:20935240,laba:9333728,kas:184926360,ampra:58697339},
+  {tgl:'2026-03-15',p:16711,px:1936,s:9566,dx:114,pxt:0,biaya:2033000,piutang:9624764,laba:9831402,kas:216474636,ampra:76717996},
+  {tgl:'2026-03-16',p:14835,px:2905,s:9097,dx:316,pxt:0,biaya:31559220,piutang:26081412,laba:9777554,kas:189016968,ampra:73470269},
+  {tgl:'2026-03-17',p:18039,px:3399,s:8272,dx:264,pxt:0,biaya:18410000,piutang:18999840,laba:10999024,kas:185687160,ampra:4310545},
+  {tgl:'2026-03-18',p:19365,px:3508,s:10965,dx:0,pxt:0,biaya:513000,piutang:18802126,laba:12089350,kas:233785674,ampra:15013295},
+  {tgl:'2026-03-19',p:20099,px:1940,s:13319,dx:308,pxt:0,biaya:18702550,piutang:9802760,laba:12156238,kas:223949890,ampra:14058568},
+  {tgl:'2026-03-20',p:17482,px:2874,s:4275,dx:262,pxt:0,biaya:2996000,piutang:23087470,laba:9414060,kas:196767930,ampra:52063631},
+  {tgl:'2026-03-21',p:13848,px:1423,s:6291,dx:179,pxt:0,biaya:270000,piutang:4362054,laba:7654327,kas:169500046,ampra:39477562},
+  {tgl:'2026-03-22',p:15989,px:3598,s:9289,dx:192,pxt:0,biaya:280000,piutang:6626020,laba:10610558,kas:233768980,ampra:25471493},
+  {tgl:'2026-03-23',p:16504,px:18,s:8191,dx:406,pxt:0,biaya:1372280,piutang:9648810,laba:8348692,kas:164600510,ampra:7572766},
+  {tgl:'2026-03-24',p:16094,px:4176,s:9660,dx:422,pxt:0,biaya:11160000,piutang:9601364,laba:11256930,kas:223604236,ampra:5566697},
+  {tgl:'2026-03-25',p:15901,px:3815,s:7210,dx:214,pxt:0,biaya:483800,piutang:15507914,laba:10186590,kas:166832586,ampra:27730118},
+  {tgl:'2026-03-26',p:15781,px:3965,s:9573,dx:325,pxt:0,biaya:320000,piutang:18150466,laba:10926761,kas:214390434,ampra:32074049},
+  {tgl:'2026-03-27',p:16046,px:43,s:9842,dx:294,pxt:0,biaya:752400,piutang:13223386,laba:8563494,kas:178264614,ampra:79408980},
+  {tgl:'2026-03-28',p:16004,px:6211,s:7906,dx:363,pxt:0,biaya:2392000,piutang:23241330,laba:12031097,kas:239454570,ampra:42402911},
+  {tgl:'2026-03-29',p:15709,px:1733,s:8023,dx:347,pxt:0,biaya:1435000,piutang:8363644,laba:9079791,kas:197020056,ampra:10354184},
+  {tgl:'2026-03-30',p:16121,px:7817,s:7941,dx:277,pxt:0,biaya:116000,piutang:17976890,laba:13057337,kas:195647610,ampra:8479957},
+  {tgl:'2026-03-31',p:15947,px:7956,s:8157,dx:191,pxt:0,biaya:3163304,piutang:9854190,laba:13087359,kas:195383206,ampra:3581230},
+];
+
+/* === DATA STOCK MARET 2026 dari sheet Stock === */
+const DS={
+pertalite:[
+  [14276,16000,16784,13458,-34],[13458,16000,18282,11085,-91],[11085,16000,17147,9849,-89],
+  [9849,16000,16347,9419,-83],[9419,16000,17683,7640,-96],[7640,16000,16998,6548,-94],
+  [6548,16000,15431,7105,-12],[7105,16000,15662,7349,-94],[7349,24000,19896,11386,-67],
+  [11386,16000,17491,9827,-68],[9827,16000,17536,8190,-101],[8190,16000,17346,6654,-190],
+  [6654,16000,15387,7180,-87],[7180,16000,15673,7435,-72],[7435,16000,16711,6675,-49],
+  [6675,16000,14835,7796,-44],[7796,16000,18039,5694,-63],[5694,24000,19365,10290,-39],
+  [10290,16000,20099,6064,-127],[6064,24000,17482,12448,-134],[12448,8000,13848,6557,-43],
+  [6557,16000,15989,6489,-79],[6489,16000,16504,5938,-47],[5938,16000,16094,5767,-77],
+  [5767,16000,15901,5798,-68],[5798,16000,15781,6003,-14],[6003,16000,16046,5877,-80],
+  [5877,16000,16004,5788,-85],[5788,16000,15709,6007,-72],[6007,16000,16121,5827,-59],
+  [5827,16000,15947,5720,-160]
+],
+pertamax:[
+  [2436,0,1012,1407,-17],[1407,4000,1902,3487,-18],[3487,0,1622,1839,-26],
+  [1839,4000,1637,4178,-24],[4178,0,2593,1562,-23],[1562,0,62,1496,-4],
+  [1496,4000,2102,3376,-18],[3376,0,1121,2238,-17],[2238,4000,972,5249,-17],
+  [5249,0,2418,2819,-12],[2819,0,1302,1496,-21],[1496,4000,1973,3510,-13],
+  [3510,0,2050,1441,-19],[1441,4000,2254,3165,-22],[3165,0,1936,1219,-10],
+  [1219,4000,2905,2293,-21],[2293,8000,3399,6869,-25],[6869,0,3508,3338,-23],
+  [3338,0,1940,1379,-19],[1379,8000,2874,6486,-19],[6486,0,1423,5045,-18],
+  [5045,0,3598,1426,-21],[1426,0,18,1408,0],[1408,8000,4176,5203,-29],
+  [5203,0,3815,1363,-25],[1363,4000,3965,1369,-29],[1369,0,43,1323,-3],
+  [1323,8000,6211,3083,-29],[3083,0,1733,1335,-15],[1335,8000,7817,1488,-30],
+  [1488,8000,7956,1496,-36]
+],
+solar:[
+  [958,8000,8157,815,14],[815,8000,7996,825,6],[825,8000,7411,1397,-17],
+  [1397,8000,8941,456,0],[456,8000,7658,844,46],[844,8000,8288,578,22],
+  [578,8000,7799,835,56],[835,8000,7971,849,-15],[849,16000,12934,3879,-36],
+  [3879,8000,11448,457,26],[457,8000,7627,869,39],[869,8000,8257,637,25],
+  [637,16000,4882,11728,-27],[11728,8000,7654,12059,-15],[12059,0,9566,2479,-14],
+  [2479,8000,9097,1407,25],[1407,8000,8272,1159,24],[1159,16000,10965,6178,-16],
+  [6178,8000,13319,909,50],[909,8000,4275,4619,-15],[4619,8000,6291,6309,-19],
+  [6309,8000,9289,5014,-6],[5014,8000,8191,4823,0],[4823,8000,9660,3179,16],
+  [3179,8000,7210,3997,28],[3997,8000,9573,2424,0],[2424,8000,9842,617,35],
+  [617,8000,7906,758,47],[758,8000,8023,750,15],[750,8000,7941,819,10],
+  [819,8000,8157,662,0]
+],
+dexlite:[
+  [1298,0,107,1204,13],[1204,0,28,1169,-7],[1169,0,71,1095,-3],
+  [1095,0,40,1055,0],[1055,2000,389,2657,-9],[2657,0,597,2046,-14],
+  [2046,0,506,1540,0],[1540,0,210,1330,0],[1330,0,200,1138,8],
+  [1138,0,561,607,30],[607,0,0,607,0],[607,2000,286,2313,-8],
+  [2313,0,226,2087,0],[2087,0,396,1687,-4],[1687,0,114,1596,23],
+  [1596,0,316,1259,-21],[1259,0,264,995,0],[995,0,0,995,0],
+  [995,2000,308,2659,-28],[2659,0,262,2397,0],[2397,0,179,2218,0],
+  [2218,0,192,2026,0],[2026,0,406,1620,0],[1620,0,422,1209,11],
+  [1209,2000,214,1016,21],[1016,2000,325,2696,5],[2696,0,294,2384,-18],
+  [2384,0,363,2006,-15],[2006,0,347,1647,-12],[1647,0,277,1382,12],
+  [1382,0,191,1191,0]
+]};
+
+/* === DATA AMPRA dari sheet Ampra === */
+const DA=[
+  {no:1,ampra_px:4000,ampra_p:16000,ampra_s:8000,ampra_dx:0,ampra_pxt:0,
+   terima_px:0,terima_p:16000,terima_s:8000,terima_dx:0,
+   do_px:0,do_p:4000,do_s:16000,do_dx:0,ket:''},
+  {no:2,ampra_px:0,ampra_p:16000,ampra_s:8000,ampra_dx:0,ampra_pxt:0,
+   terima_px:4000,terima_p:16000,terima_s:8000,terima_dx:0,
+   do_px:0,do_p:0,do_s:16000,do_dx:0,ket:''},
+  {no:3,ampra_px:4000,ampra_p:16000,ampra_s:8000,ampra_dx:0,ampra_pxt:0,
+   terima_px:0,terima_p:16000,terima_s:8000,terima_dx:0,
+   do_px:0,do_p:4000,do_s:16000,do_dx:0,ket:'Kredit 16 KL'},
+  {no:4,ampra_px:0,ampra_p:16000,ampra_s:8000,ampra_dx:2000,ampra_pxt:0,
+   terima_px:4000,terima_p:16000,terima_s:8000,terima_dx:0,
+   do_px:0,do_p:0,do_s:16000,do_dx:2000,ket:''},
+  {no:5,ampra_px:0,ampra_p:16000,ampra_s:8000,ampra_dx:0,ampra_pxt:0,
+   terima_px:0,terima_p:16000,terima_s:8000,terima_dx:2000,
+   do_px:0,do_p:0,do_s:16000,do_dx:0,ket:''},
+  {no:6,ampra_px:4000,ampra_p:16000,ampra_s:8000,ampra_dx:0,ampra_pxt:0,
+   terima_px:0,terima_p:16000,terima_s:8000,terima_dx:0,
+   do_px:0,do_p:4000,do_s:16000,do_dx:0,ket:''},
+  {no:7,ampra_px:0,ampra_p:16000,ampra_s:8000,ampra_dx:0,ampra_pxt:0,
+   terima_px:4000,terima_p:16000,terima_s:8000,terima_dx:0,
+   do_px:0,do_p:0,do_s:16000,do_dx:0,ket:''},
+  {no:8,ampra_px:4000,ampra_p:24000,ampra_s:16000,ampra_dx:0,ampra_pxt:0,
+   terima_px:0,terima_p:16000,terima_s:8000,terima_dx:0,
+   do_px:0,do_p:4000,do_s:24000,do_dx:0,ket:''},
+  {no:28,ampra_px:8000,ampra_p:16000,ampra_s:8000,ampra_dx:0,ampra_pxt:0,
+   terima_px:0,terima_p:16000,terima_s:8000,terima_dx:0,
+   do_px:0,do_p:8000,do_s:16000,do_dx:0,ket:'8 kL kredit Pertamax'},
+];
+
+/* === DATA BIAYA MARET 2026 dari sheet Biaya === */
+const BIAYA_OPS=[
+  {nm:'Gaji Karyawan',jml:96410000},
+  {nm:'Faktur',jml:3110000},
+  {nm:'Listrik (SPBU+Gasifa)',jml:10327280},
+  {nm:'Wi-Fi',jml:349650},
+  {nm:'ATK / Foto Copy',jml:57800},
+  {nm:'Nota SPBU',jml:9477099},
+  {nm:'BBM Operasional',jml:5949974},
+  {nm:'Konsumsi Buka Puasa/Takjil',jml:418000},
+  {nm:'Sumbangan / Undangan',jml:1100000},
+  {nm:'By/Upah Tukang/Service',jml:1000000},
+  {nm:'Konsumsi',jml:1874200},
+  {nm:'Pulsa',jml:341000},
+  {nm:'BBM/Oli Genset',jml:68000},
+  {nm:'TV Kabel',jml:30000},
+  {nm:'BPJS',jml:12930000},
+  {nm:'Gaji URT',jml:3500000},
+  {nm:'Nota Rumah Soreang',jml:11759800},
+  {nm:'Iuran Hiswana Migas',jml:356000},
+  {nm:'Listrik/Telkom/PDAM Makassar',jml:1007000},
+  {nm:'Beras/Gas/Alat Dapur',jml:3800000},
+  {nm:'Auditor',jml:2500000},
+  {nm:'Pajak BBM (Ampra)',jml:17274753},
+  {nm:'Biaya BRI Link',jml:2083400},
+  {nm:'Uang Tunai Pak H. Ibr',jml:1500000},
+  {nm:'Uang Tunai Ibu Hj. Fat',jml:12000000},
+  {nm:'Transfer Keluarga',jml:9483000},
+  {nm:'Buka Bersama Di Wanio',jml:4029000},
+  {nm:'KUR Anas',jml:10600000},
+  {nm:'Listrik Molan/Iuran Kebersihan',jml:1007000},
+];
+const BIAYA_NON_OPS=[
+  {nm:'Bunga Bank BRI',jml:127500000,cat:'bunga'},
+  {nm:'KUR (Anas)',jml:10600000,cat:'bunga'},
+  {nm:'Talangan BTN (bunga)',jml:4902500,cat:'bunga'},
+  {nm:'Ir. H. Ibrahim Mukti',jml:1500000,cat:'personal'},
+  {nm:'Ir. Hj. Fatimah Sali Umar',jml:12000000,cat:'personal'},
+  {nm:'Gaji ART',jml:3500000,cat:'personal'},
+  {nm:'Transfer Keluarga',jml:9483000,cat:'personal'},
+  {nm:'Beras/Panti Asuhan',jml:3800000,cat:'personal'},
+  {nm:'Nota Kebutuhan Soreang',jml:11759800,cat:'personal'},
+  {nm:'Listrik/Wi-Fi/PDAM Mks',jml:1007000,cat:'personal'},
+  {nm:'Listrik Rumah Molan',jml:1007000,cat:'personal'},
+  {nm:'Buka Bersama Di Wanio',jml:4029000,cat:'event'},
+  {nm:'Sumbangan/Undangan',jml:1100000,cat:'event'},
+  {nm:'Biaya BRI Link',jml:2083400,cat:'admin'},
+];
+
+/* === HELPERS === */
+const rp=n=>{if(!n||isNaN(n))return'Rp 0';const a=Math.abs(Math.round(n));
+  if(a>=1e9)return(n<0?'-':'')+'Rp '+(a/1e9).toFixed(2)+' M';
+  if(a>=1e6)return(n<0?'-':'')+'Rp '+(a/1e6).toFixed(1)+' Jt';
+  return(n<0?'-Rp ':'Rp ')+a.toLocaleString('id-ID');};
+const rpf=n=>(n<0?'-Rp ':'Rp ')+Math.abs(Math.round(n)).toLocaleString('id-ID');
+const fn=n=>Math.round(n).toLocaleString('id-ID');
+const jual=d=>d.p*10000+d.px*12600+d.s*6800+d.dx*14500+d.pxt*13350;
+const margin=d=>d.p*360+d.px*640+d.s*262+d.dx*615;
+const lossCol=l=>l<0?'color:#CC0001;font-weight:600':l>0?'color:#2E7D32;font-weight:600':'';
+const lossSign=l=>(l>0?'+':'')+l;
+
+/* === AUTH === */
+let role='owner';
+function selectRole(r,el){
+  role=r;
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('login-user').value=r;
+}
+function doLogin(){
+  if(document.getElementById('login-pass').value!=='1234'){alert('Password salah!');return;}
+  document.getElementById('login-page').style.display='none';
+  document.getElementById('app').classList.add('visible');
+  setupNav();
+  showPage({owner:'dashboard',manager:'monitor-penjualan',operator:'input-harian'}[role]);
+}
+function doLogout(){
+  document.getElementById('login-page').style.display='flex';
+  document.getElementById('app').classList.remove('visible');
+}
+function setupNav(){
+  const m={owner:['badge-owner','ti-crown','Owner'],manager:['badge-manager','ti-briefcase','Manager'],operator:['badge-operator','ti-user-cog','Operator']};
+  const[cls,ico,nm]=m[role];
+  const b=document.getElementById('user-badge');
+  b.className='user-badge '+cls;
+  b.innerHTML=`<i class="ti ${ico}" style="font-size:13px"></i><span>${nm}</span>`;
+  document.getElementById('nav-operator').style.display='block';
+  document.getElementById('nav-manager').style.display=(role!=='operator')?'block':'none';
+  document.getElementById('nav-owner').style.display=role==='owner'?'block':'none';
+}
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const pg=document.getElementById('page-'+id);
+  if(pg)pg.classList.add('active');
+  const nv=document.querySelector(`[data-page="${id}"]`);
+  if(nv)nv.classList.add('active');
+  ({
+    'input-harian':buildInputHarian,
+    'input-ampra':buildInputAmpra,
+    'monitor-penjualan':renderMonitor,
+    'laporan-stock':renderStock,
+    'laporan-ampra':renderAmpra,
+    'edit-transaksi':renderEditTable,
+    'dashboard':renderDashboard,
+    'daily-report':()=>{document.getElementById('dr-tgl').value='2026-03-01';renderDailyReport();},
+    'monthly-report':renderMonthlyReport,
+    'laba-rugi':renderLabaRugi,
+    'cashflow':renderCashflow,
+    'biaya':renderBiaya,
+    'gaji':renderGaji,
+  }[id]||function(){})();
+}
+
+/* === BUILD INPUT HARIAN === */
+function buildInputHarian(){
+  const g=document.getElementById('bbm-input-grid');
+  if(g&&!g._b){g._b=1;g.innerHTML=BBM.filter(b=>b.key!=='plk').map(b=>`
+    <div class="bbm-card" id="bc-${b.key}">
+      <div class="bbm-name">${b.nm}</div>
+      <div class="bbm-input-row"><label>Liter</label>
+        <input type="number" id="bbm-${b.key}" placeholder="0" min="0" oninput="calcTotalBBM()">
+      </div>
+      <div style="font-size:10px;color:var(--gray-500);margin-top:3px">Harga Rp ${b.hj.toLocaleString()}/L · Margin Rp ${(b.hj-b.hpp).toLocaleString()}/L</div>
+    </div>`).join('');}
+  const sa=document.getElementById('stock-input-area');
+  if(sa&&!sa._b){sa._b=1;sa.innerHTML=BBM.filter(b=>b.key!=='plk').map(b=>`
+    <div style="display:grid;grid-template-columns:140px 1fr 1fr 1fr;gap:8px;align-items:center;margin-bottom:7px;padding:8px 10px;background:var(--gray-50);border-radius:8px">
+      <span class="stock-tag ${b.tag}">${b.nm}</span>
+      <div class="input-group" style="margin:0"><label style="font-size:10px">Stock Awal (L)</label><input type="number" id="sa-${b.key}" placeholder="0"></div>
+      <div class="input-group" style="margin:0"><label style="font-size:10px">Minyak Masuk (L)</label><input type="number" id="sm-${b.key}" placeholder="0"></div>
+      <div class="input-group" style="margin:0"><label style="font-size:10px">Stock Akhir (L)</label><input type="number" id="sak-${b.key}" placeholder="0"></div>
+    </div>`).join('');}
+  if(!document.getElementById('h-tgl').value)
+    document.getElementById('h-tgl').value=new Date().toISOString().split('T')[0];
+}
+function calcTotalBBM(){
+  let tot=0,mar=0;
+  BBM.filter(b=>b.key!=='plk').forEach(b=>{
+    const v=parseFloat(document.getElementById('bbm-'+b.key)?.value||0);
+    tot+=v*b.hj; mar+=v*(b.hj-b.hpp);
+    document.getElementById('bc-'+b.key)?.classList.toggle('active',v>0);
+  });
+  document.getElementById('total-penjualan-text').textContent=
+    `Total penjualan: ${rpf(tot)} | Estimasi margin: ${rpf(mar)}`;
+}
+function simpanHarian(){
+  if(!document.getElementById('h-tgl').value){showAlert('input','danger','Tanggal wajib diisi!');return;}
+  showAlert('input','success','Data harian berhasil disimpan!');
+  resetInputHarian();
+}
+function resetInputHarian(){
+  BBM.forEach(b=>{['bbm-','sa-','sm-','sak-'].forEach(p=>{const e=document.getElementById(p+b.key);if(e)e.value='';});});
+  ['h-saldo-kas','h-saldo-ampra','h-edc','h-biaya-spbu','h-faktur','h-bbm-ops','h-nota','h-gaji','h-lain','h-piutang','h-tambahan','h-mypertamina','h-pajak-ampra'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  const k=document.getElementById('h-ket-biaya');if(k)k.value='';
+}
+function showAlert(t,type,msg){
+  const el=document.getElementById('alert-'+t);if(!el)return;
+  el.className='alert alert-'+type;
+  el.innerHTML=`<i class="ti ${type==='success'?'ti-check-circle':'ti-alert-circle'}"></i>${msg}`;
+  el.style.display='flex';setTimeout(()=>el.style.display='none',4000);
+}
+
+/* === BUILD INPUT AMPRA === */
+function buildInputAmpra(){
+  if(!document.getElementById('a-tgl').value)
+    document.getElementById('a-tgl').value=new Date().toISOString().split('T')[0];
+  const bld=(cid,pref)=>{
+    const el=document.getElementById(cid);if(!el||el._b)return;el._b=1;
+    el.innerHTML=BBM.map(b=>`
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:7px;padding:7px 10px;background:var(--gray-50);border-radius:8px">
+        <span class="stock-tag ${b.tag}" style="min-width:95px;text-align:center">${b.nm}</span>
+        <input type="number" id="${pref}-${b.key}" placeholder="0 L" min="0"
+          style="flex:1;padding:6px 9px;border:1.5px solid var(--gray-200);border-radius:7px;font-size:12px;outline:none">
+        <span style="font-size:10px;color:var(--gray-500);min-width:28px">L</span>
+      </div>`).join('');
+  };
+  bld('ampra-bbm-inputs','ab');
+  bld('penerimaan-bbm-inputs','pb');
+  bld('do-bbm-inputs','db');
+}
+function simpanAmpra(){showAlert('ampra','success','Data ampra berhasil disimpan!');resetAmpra();}
+function resetAmpra(){BBM.forEach(b=>{['ab-','pb-','db-'].forEach(p=>{const e=document.getElementById(p+b.key);if(e)e.value='';});});
+  const k=document.getElementById('a-ket');if(k)k.value='';}
+
+/* === MONITOR PENJUALAN === */
+function renderMonitor(){
+  const tb=document.getElementById('monitor-tbody');
+  const tf=document.getElementById('monitor-tfoot');
+  if(!tb)return;
+  let tp=0,tpx=0,ts=0,td=0,tj=0,tb2=0,tm=0;
+  tb.innerHTML=DH.map(d=>{
+    const j=jual(d),m=margin(d),dt=new Date(d.tgl);
+    tp+=d.p;tpx+=d.px;ts+=d.s;td+=d.dx;tj+=j;tb2+=d.biaya;tm+=m;
+    return`<tr>
+      <td>${dt.getDate().toString().padStart(2,'0')} ${BBULAN[3]}</td>
+      <td class="text-right">${fn(d.p)}</td><td class="text-right">${fn(d.px)}</td>
+      <td class="text-right">${fn(d.s)}</td><td class="text-right">${fn(d.dx)}</td>
+      <td class="text-right"><strong>${rpf(j)}</strong></td>
+      <td class="text-right">${rpf(d.biaya)}</td>
+      <td class="text-right" style="color:#2E7D32">${rpf(m)}</td>
+    </tr>`;
+  }).join('');
+  tf.innerHTML=`<tr><td><strong>TOTAL</strong></td>
+    <td class="text-right"><strong>${fn(tp)}</strong></td><td class="text-right"><strong>${fn(tpx)}</strong></td>
+    <td class="text-right"><strong>${fn(ts)}</strong></td><td class="text-right"><strong>${fn(td)}</strong></td>
+    <td class="text-right"><strong>${rpf(tj)}</strong></td>
+    <td class="text-right"><strong>${rpf(tb2)}</strong></td>
+    <td class="text-right"><strong style="color:#2E7D32">${rpf(tm)}</strong></td></tr>`;
+}
+
+/* === LAPORAN STOCK === */
+function renderStock(){
+  const jenis=document.getElementById('stock-jenis')?.value||'pertalite';
+  const data=DS[jenis]||[];
+  const b=BBM.find(x=>x.key===jenis);
+  const tb=document.getElementById('stock-tbody');
+  const tf=document.getElementById('stock-tfoot');
+  const mc=document.getElementById('stock-metrics');
+  if(!tb)return;
+  const tMasuk=data.reduce((s,r)=>s+r[1],0);
+  const tJual=data.reduce((s,r)=>s+r[2],0);
+  const tLoss=data.reduce((s,r)=>s+r[4],0);
+  mc.innerHTML=`
+    <div class="metric-card blue"><div class="metric-label">Total Masuk</div><div class="metric-value">${fn(tMasuk)} L</div><div class="metric-sub">Penerimaan Maret</div><i class="ti ti-arrow-down metric-icon"></i></div>
+    <div class="metric-card green"><div class="metric-label">Total Terjual</div><div class="metric-value">${fn(tJual)} L</div><div class="metric-sub">${rp(tJual*(b?.hj||0))}</div><i class="ti ti-chart-bar metric-icon"></i></div>
+    <div class="metric-card ${tLoss<0?'red':'green'}"><div class="metric-label">Total Losses</div><div class="metric-value">${lossSign(tLoss)} L</div><div class="metric-sub">${rp(Math.abs(tLoss)*(b?.hpp||0))}</div><i class="ti ti-arrows-diff metric-icon"></i></div>
+    <div class="metric-card orange"><div class="metric-label">Stock Akhir</div><div class="metric-value">${fn(data[data.length-1]?.[3]||0)} L</div><div class="metric-sub">31 Maret 2026</div><i class="ti ti-stack metric-icon"></i></div>`;
+  tb.innerHTML=data.map((r,i)=>{
+    const[awal,masuk,jual2,akhir,loss]=r;
+    const lbl=loss<-50?`<span class="badge badge-danger">Tinggi</span>`:
+      loss<0?`<span class="badge badge-warning">Normal</span>`:
+      loss>0?`<span class="badge badge-info">Surplus</span>`:
+      `<span class="badge badge-gray">Nol</span>`;
+    return`<tr>
+      <td class="text-center">${i+1}</td>
+      <td class="text-right">${fn(awal)}</td>
+      <td class="text-right" style="${masuk>0?'color:#2E7D32;font-weight:600':'color:var(--gray-400)'}">${masuk>0?fn(masuk):'-'}</td>
+      <td class="text-right">${fn(jual2)}</td>
+      <td class="text-right">${fn(akhir)}</td>
+      <td class="text-right" style="${lossCol(loss)}">${lossSign(loss)}</td>
+      <td>${lbl}</td>
+    </tr>`;
+  }).join('');
+  tf.innerHTML=`<tr><td>TOTAL</td><td></td><td class="text-right">${fn(tMasuk)}</td><td class="text-right">${fn(tJual)}</td><td></td><td class="text-right" style="${lossCol(tLoss)}">${lossSign(tLoss)}</td><td></td></tr>`;
+}
+
+/* === LAPORAN AMPRA === */
+function renderAmpra(){
+  const tb=document.getElementById('ampra-tbody');
+  if(!tb)return;
+  tb.innerHTML=DA.map(d=>`<tr>
+    <td class="text-center">${d.no}</td>
+    <td class="text-right" style="${d.ampra_p>0?'color:#1B5E20;font-weight:600':'color:var(--gray-400)'}">${d.ampra_p>0?fn(d.ampra_p):'-'}</td>
+    <td class="text-right" style="${d.ampra_px>0?'color:#0D47A1;font-weight:600':'color:var(--gray-400)'}">${d.ampra_px>0?fn(d.ampra_px):'-'}</td>
+    <td class="text-right" style="${d.ampra_s>0?'color:#E65100;font-weight:600':'color:var(--gray-400)'}">${d.ampra_s>0?fn(d.ampra_s):'-'}</td>
+    <td class="text-right" style="${d.ampra_dx>0?'color:#4A148C;font-weight:600':'color:var(--gray-400)'}">${d.ampra_dx>0?fn(d.ampra_dx):'-'}</td>
+    <td class="text-right" style="${d.terima_p>0?'color:#2E7D32;font-weight:600':'color:var(--gray-400)'}">${d.terima_p>0?fn(d.terima_p):'-'}</td>
+    <td class="text-right" style="${d.terima_px>0?'color:#2E7D32;font-weight:600':'color:var(--gray-400)'}">${d.terima_px>0?fn(d.terima_px):'-'}</td>
+    <td class="text-right" style="${d.terima_s>0?'color:#2E7D32;font-weight:600':'color:var(--gray-400)'}">${d.terima_s>0?fn(d.terima_s):'-'}</td>
+    <td>${d.ket?`<span class="badge badge-warning">${d.ket}</span>`:''}</td>
+  </tr>`).join('');
+}
+
+/* === EDIT TRANSAKSI === */
+function renderEditTable(){
+  const tb=document.getElementById('et-tbody');if(!tb)return;
+  tb.innerHTML=DH.map(d=>{
+    const j=jual(d),m=margin(d),dt=new Date(d.tgl);
+    return`<tr>
+      <td>${dt.getDate().toString().padStart(2,'0')} ${BBULAN[3]}</td>
+      <td class="text-right">${fn(d.p)} L</td><td class="text-right">${fn(d.px)} L</td>
+      <td class="text-right">${fn(d.s)} L</td><td class="text-right">${fn(d.dx)} L</td>
+      <td class="text-right">${rpf(j)}</td><td class="text-right">${rpf(d.biaya)}</td>
+      <td class="text-right" style="color:#2E7D32">${rpf(m)}</td>
+      <td class="text-center"><button class="btn-icon" onclick="openEdit('${d.tgl}')" title="Edit"><i class="ti ti-pencil"></i></button></td>
+    </tr>`;
+  }).join('');
+}
+function openEdit(tStr){
+  const d=DH.find(x=>x.tgl===tStr);if(!d)return;
+  const dt=new Date(tStr);
+  const km={pertalite:'p',pertamax:'px',solar:'s',dexlite:'dx'};
+  let rows='';
+  BBM.filter(b=>b.key!=='plk'&&b.key!=='pxturbo').forEach(b=>{
+    rows+='<div class="input-group"><label>'+b.nm+' (L)</label><input type="number" id="me-'+b.key+'" value="'+(d[km[b.key]]||0)+'"></div>';
+  });
+  document.getElementById('modal-body').innerHTML=
+    '<p style="font-size:12px;color:var(--gray-500);margin-bottom:13px">Tanggal: <strong>'+dt.getDate()+' '+BBULAN[dt.getMonth()+1]+' '+dt.getFullYear()+'</strong></p>'+
+    '<div class="form-row">'+rows+'</div>'+
+    '<div class="form-row">'+
+    '<div class="input-group"><label>Biaya SPBU (Rp)</label><input type="number" id="me-biaya" value="'+d.biaya+'"></div>'+
+    '<div class="input-group"><label>Piutang (Rp)</label><input type="number" id="me-piutang" value="'+d.piutang+'"></div>'+
+    '</div>';
+  document.getElementById('edit-modal').classList.add('open');
+}
+function closeModal(){document.getElementById('edit-modal').classList.remove('open');}
+function saveEdit(){closeModal();renderEditTable();}
+
+/* === DASHBOARD === */
+let chartBBM,chartTrend;
+function renderDashboard(){
+  if(chartBBM)return;
+  const tots=[DH.reduce((s,d)=>s+d.p,0),DH.reduce((s,d)=>s+d.px,0),DH.reduce((s,d)=>s+d.s,0),DH.reduce((s,d)=>s+d.dx,0)];
+  chartBBM=new Chart(document.getElementById('chart-bbm-jenis'),{
+    type:'bar',
+    data:{labels:['Pertalite','Pertamax','Solar','Dexlite'],
+      datasets:[{label:'Volume (L)',data:tots,backgroundColor:['#2E7D32','#1565C0','#E65100','#4A148C'],borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{y:{ticks:{callback:v=>fn(v)+'L'}}}}
+  });
+  chartTrend=new Chart(document.getElementById('chart-trend'),{
+    type:'line',
+    data:{labels:DH.map((_,i)=>i+1),
+      datasets:[
+        {label:'Pertalite',data:DH.map(d=>d.p),borderColor:'#2E7D32',backgroundColor:'rgba(46,125,50,0.08)',borderWidth:2,pointRadius:2,fill:true,tension:0.3},
+        {label:'Solar',data:DH.map(d=>d.s),borderColor:'#E65100',borderWidth:1.5,pointRadius:1,tension:0.3},
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{y:{ticks:{callback:v=>fn(v)+'L'}}}}
+  });
+}
+
+/* === DAILY REPORT === */
+function renderDailyReport(){
+  const tStr=document.getElementById('dr-tgl').value;if(!tStr)return;
+  const d=DH.find(x=>x.tgl===tStr);
+  const dt=new Date(tStr);
+  const el=document.getElementById('daily-content');
+  const lbl=`${dt.getDate()} ${BBULAN[dt.getMonth()+1]} ${dt.getFullYear()}`;
+  if(!d){
+    el.innerHTML=`<div class="card"><div class="card-body"><div class="empty-state"><i class="ti ti-calendar-x"></i><p>Tidak ada data untuk ${lbl}</p></div></div></div>`;
+    return;
+  }
+  const j=jual(d),mar=margin(d);
+  const dayIdx=dt.getDate()-1;
+  el.innerHTML=`
+    <div style="margin-bottom:13px;padding:11px 15px;background:var(--gray-50);border-radius:10px;border-left:4px solid #CC0001">
+      <div style="font-size:13px;font-weight:700;color:var(--gray-800)">Laporan Harian — ${lbl}</div>
+      <div style="font-size:11px;color:var(--gray-500)">SPBU 74.912.01 PT. Bintang Ifatman Mandiri Maccorawalie · Kab. Pinrang</div>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric-card green"><div class="metric-label">Total Penjualan</div><div class="metric-value">${rpf(j)}</div><div class="metric-sub">${fn(d.p+d.px+d.s+d.dx)} L semua jenis</div></div>
+      <div class="metric-card blue"><div class="metric-label">Margin Kotor</div><div class="metric-value">${rpf(mar)}</div><div class="metric-sub">Selisih harga jual-HPP</div></div>
+      <div class="metric-card orange"><div class="metric-label">Biaya SPBU</div><div class="metric-value">${rpf(d.biaya)}</div></div>
+      <div class="metric-card teal"><div class="metric-label">Saldo Kas</div><div class="metric-value">${rp(d.kas)}</div><div class="metric-sub">Rek. Ampra: ${rp(d.ampra)}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-droplet"></i>Penjualan & Margin per BBM</div></div>
+        <div class="card-body" style="padding:0">
+          <table>
+            <thead><tr><th>Jenis BBM</th><th class="text-right">Volume (L)</th><th class="text-right">Nilai (Rp)</th><th class="text-right">Margin</th></tr></thead>
+            <tbody>
+              ${[['pertalite','p','Pertalite','tag-pertalite',10000,9640],
+                 ['pertamax','px','Pertamax','tag-pertamax',12600,11960],
+                 ['solar','s','Solar','tag-solar',6800,6538],
+                 ['dexlite','dx','Dexlite','tag-dexlite',14500,13885]
+                ].map(([k,dk,nm,tag,hj,hpp])=>{
+                const v=d[dk]||0;
+                return`<tr>
+                  <td><span class="stock-tag ${tag}">${nm}</span></td>
+                  <td class="text-right">${fn(v)}</td>
+                  <td class="text-right">${rpf(v*hj)}</td>
+                  <td class="text-right" style="color:#2E7D32">${rpf(v*(hj-hpp))}</td>
+                </tr>`;}).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-stack"></i>Stock BBM Hari Ini</div></div>
+        <div class="card-body" style="padding:0">
+          <table>
+            <thead><tr><th>Jenis</th><th class="text-right">Awal</th><th class="text-right">Masuk</th><th class="text-right">Terjual</th><th class="text-right">Akhir</th><th class="text-right">Loss</th></tr></thead>
+            <tbody>
+              ${Object.entries(DS).map(([k,rows])=>{
+                if(!rows[dayIdx])return'';
+                const[awal,masuk,jual2,akhir,loss]=rows[dayIdx];
+                const bbm=BBM.find(b=>b.key===k);
+                return`<tr>
+                  <td><span class="stock-tag ${bbm.tag}">${bbm.nm}</span></td>
+                  <td class="text-right">${fn(awal)}</td>
+                  <td class="text-right" style="${masuk>0?'color:#2E7D32;font-weight:600':'color:var(--gray-400)'}">${masuk>0?fn(masuk):'-'}</td>
+                  <td class="text-right">${fn(jual2)}</td>
+                  <td class="text-right">${fn(akhir)}</td>
+                  <td class="text-right" style="${lossCol(loss)}">${lossSign(loss)}</td>
+                </tr>`;}).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title"><i class="ti ti-wallet"></i>Posisi Dana & Laporan Keadaan Dana Pengadaan BBM</div></div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+          <div style="padding:12px;background:var(--gray-50);border-radius:9px">
+            <div style="font-size:10px;color:var(--gray-500);margin-bottom:7px;font-weight:700;text-transform:uppercase">Saldo</div>
+            <div style="font-size:12px;line-height:1.9">
+              <div style="display:flex;justify-content:space-between"><span>Kas</span><strong>${rpf(d.kas)}</strong></div>
+              <div style="display:flex;justify-content:space-between"><span>Rek. Ampra</span><strong>${rpf(d.ampra)}</strong></div>
+              <div style="display:flex;justify-content:space-between;border-top:1px solid var(--gray-200);padding-top:6px;margin-top:4px"><span>Total</span><strong style="color:#1565C0">${rpf(d.kas+d.ampra)}</strong></div>
+            </div>
+          </div>
+          <div style="padding:12px;background:var(--gray-50);border-radius:9px">
+            <div style="font-size:10px;color:var(--gray-500);margin-bottom:7px;font-weight:700;text-transform:uppercase">Piutang & Tambahan</div>
+            <div style="font-size:12px;line-height:1.9">
+              <div style="display:flex;justify-content:space-between"><span>Piutang</span><strong>${rpf(d.piutang)}</strong></div>
+              <div style="display:flex;justify-content:space-between"><span>Biaya SPBU</span><strong style="color:#CC0001">(${rpf(d.biaya)})</strong></div>
+            </div>
+          </div>
+          <div style="padding:12px;background:var(--gray-50);border-radius:9px">
+            <div style="font-size:10px;color:var(--gray-500);margin-bottom:7px;font-weight:700;text-transform:uppercase">Laba</div>
+            <div style="font-size:12px;line-height:1.9">
+              <div style="display:flex;justify-content:space-between"><span>Margin Kotor</span><strong style="color:#2E7D32">${rpf(mar)}</strong></div>
+              <div style="display:flex;justify-content:space-between"><span>Laba Harian (est.)</span><strong style="color:#2E7D32">${rpf(d.laba)}</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* === MONTHLY REPORT === */
+function renderMonthlyReport(){
+  const el=document.getElementById('monthly-content');if(!el)return;
+  const tP=DH.reduce((s,d)=>s+d.p,0),tPx=DH.reduce((s,d)=>s+d.px,0);
+  const tS=DH.reduce((s,d)=>s+d.s,0),tDx=DH.reduce((s,d)=>s+d.dx,0);
+  const omset=tP*10000+tPx*12600+tS*6800+tDx*14500;
+  const tBiaya=DH.reduce((s,d)=>s+d.biaya,0);
+  const rows=[
+    ['pertalite','Pertalite',tP,'tag-pertalite',10000,9640],
+    ['pertamax','Pertamax',tPx,'tag-pertamax',12600,11960],
+    ['solar','Solar',tS,'tag-solar',6800,6538],
+    ['dexlite','Dexlite',tDx,'tag-dexlite',14500,13885],
+  ];
+  el.innerHTML=`
+    <div class="metrics-grid">
+      <div class="metric-card red"><div class="metric-label">Omset Maret</div><div class="metric-value">${rp(omset)}</div><div class="metric-sub">Total semua BBM</div></div>
+      <div class="metric-card blue"><div class="metric-label">Volume Total</div><div class="metric-value">${fn(tP+tPx+tS+tDx)} L</div><div class="metric-sub">Semua jenis</div></div>
+      <div class="metric-card green"><div class="metric-label">Margin Kotor</div><div class="metric-value">${rp(tP*360+tPx*640+tS*262+tDx*615)}</div><div class="metric-sub">Selisih harga-HPP</div></div>
+      <div class="metric-card orange"><div class="metric-label">Biaya Operasional</div><div class="metric-value">${rp(tBiaya)}</div><div class="metric-sub">Selama bulan ini</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title"><i class="ti ti-table"></i>Rekap Volume, Omset & Margin per Jenis BBM</div></div>
+      <div class="card-body" style="padding:0">
+        <table>
+          <thead><tr><th>Jenis BBM</th><th class="text-right">Volume (L)</th><th class="text-right">Harga Jual</th><th class="text-right">Omset (Rp)</th><th class="text-right">HPP/L</th><th class="text-right">Total HPP</th><th class="text-right">Margin</th></tr></thead>
+          <tbody>
+            ${rows.map(([k,nm,v,tag,hj,hpp])=>`<tr>
+              <td><span class="stock-tag ${tag}">${nm}</span></td>
+              <td class="text-right">${fn(v)}</td>
+              <td class="text-right">Rp ${hj.toLocaleString()}</td>
+              <td class="text-right">${rpf(v*hj)}</td>
+              <td class="text-right">Rp ${hpp.toLocaleString()}</td>
+              <td class="text-right">${rpf(v*hpp)}</td>
+              <td class="text-right" style="color:#2E7D32"><strong>${rpf(v*(hj-hpp))}</strong></td>
+            </tr>`).join('')}
+          </tbody>
+          <tfoot>
+            <tr><td><strong>TOTAL</strong></td>
+            <td class="text-right"><strong>${fn(tP+tPx+tS+tDx)}</strong></td>
+            <td></td><td class="text-right"><strong>${rpf(omset)}</strong></td>
+            <td></td><td class="text-right"><strong>${rpf(tP*9640+tPx*11960+tS*6538+tDx*13885)}</strong></td>
+            <td class="text-right"><strong style="color:#2E7D32">${rpf(tP*360+tPx*640+tS*262+tDx*615)}</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-arrows-diff"></i>Rekap Losses per Jenis BBM</div></div>
+        <div class="card-body" style="padding:0">
+          <table>
+            <thead><tr><th>Jenis</th><th class="text-right">Total Losses (L)</th><th class="text-right">Nilai Losses</th></tr></thead>
+            <tbody>
+              ${Object.entries(DS).map(([k,rows2])=>{
+                const tL=rows2.reduce((s,r)=>s+r[4],0);
+                const bb=BBM.find(b=>b.key===k);
+                return`<tr>
+                  <td><span class="stock-tag ${bb?.tag}">${bb?.nm}</span></td>
+                  <td class="text-right" style="${lossCol(tL)}">${lossSign(tL)}</td>
+                  <td class="text-right" style="color:#CC0001">${rpf(Math.abs(tL)*(bb?.hpp||0))}</td>
+                </tr>`;}).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar"></i>Top Biaya Harian Terbesar</div></div>
+        <div class="card-body" style="padding:0">
+          <table>
+            <thead><tr><th>Tanggal</th><th class="text-right">Biaya SPBU</th></tr></thead>
+            <tbody>
+              ${DH.slice().sort((a,b)=>b.biaya-a.biaya).slice(0,6).map(d=>{
+                const dt=new Date(d.tgl);
+                return`<tr><td>${dt.getDate()} ${BBULAN[3]}</td><td class="text-right">${rpf(d.biaya)}</td></tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* === LABA RUGI (persis dari sheet Rugi Laba) === */
+function renderLabaRugi(){
+  const el=document.getElementById('lr-content');if(!el)return;
+  const tP=518138,tPx=80337,tS=264600,tDx=8091;
+  const omset=tP*10000+tPx*12600+tS*6800+tDx*14500;
+  const stokAwal=204701589;
+  const pembelian=7729048000;
+  const stokAkhir=110570350;
+  const hpp=stokAwal+pembelian-stokAkhir;
+  const labaKotor=omset-hpp;
+  const tOps=BIAYA_OPS.reduce((s,b)=>s+b.jml,0);
+  const tNonOps=BIAYA_NON_OPS.reduce((s,b)=>s+b.jml,0);
+  const labaBersih=labaKotor-tOps-tNonOps;
+  el.innerHTML=`
+    <div style="margin-bottom:13px;padding:11px 15px;background:var(--gray-50);border-radius:10px;border-left:4px solid #CC0001">
+      <div style="font-size:13px;font-weight:700">Perhitungan Laba Rugi — Maret 2026</div>
+      <div style="font-size:11px;color:var(--gray-500)">SPBU 74.912.01 PT. Bintang Ifatman Mandiri Maccorawalie · Kab. Pinrang · Dibuat: 07 April 2026 · Oleh: Gazali</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
+      <div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-report-money"></i>Laporan Laba Rugi</div></div>
+          <div class="card-body" style="padding:0">
+            <table class="lr-table">
+              <tr class="section-header"><td colspan="2">Omset Penjualan SPBU 74.912.01</td></tr>
+              <tr class="indent"><td class="indent">Penjualan Solar (${fn(tS)} L × Rp 6.800)</td><td class="text-right">${rpf(tS*6800)}</td></tr>
+              <tr class="indent"><td class="indent">Penjualan Pertalite (${fn(tP)} L × Rp 10.000)</td><td class="text-right">${rpf(tP*10000)}</td></tr>
+              <tr class="indent"><td class="indent">Penjualan Pertamax (${fn(tPx)} L × Rp 12.600)</td><td class="text-right">${rpf(tPx*12600)}</td></tr>
+              <tr class="indent"><td class="indent">Penjualan Pertamax Turbo (0 L)</td><td class="text-right" style="color:var(--gray-400)">-</td></tr>
+              <tr class="indent"><td class="indent">Penjualan Dexlite (${fn(tDx)} L × Rp 14.500)</td><td class="text-right">${rpf(tDx*14500)}</td></tr>
+              <tr class="total-row"><td>Total Penjualan</td><td class="text-right" style="color:#2E7D32">${rpf(omset)}</td></tr>
+              <tr class="section-header"><td colspan="2">Harga Pokok Penjualan (HPP)</td></tr>
+              <tr class="indent"><td class="indent">* Stock Awal (Solar 958L, Pertalite 14.276L, Pertamax 2.436L, PX Turbo 1.110L, Dexlite 1.298L)</td><td class="text-right">${rpf(stokAwal)}</td></tr>
+              <tr class="indent"><td class="indent">* Penerimaan 1 Bulan (Solar 264.000L, Pertalite 496.000L+16.000L, Pertamax 80.000L, Dexlite 8.000L)</td><td class="text-right">${rpf(pembelian)}</td></tr>
+              <tr class="indent" style="padding-left:20px"><td class="indent">Barang Siap Untuk Dijual</td><td class="text-right">${rpf(stokAwal+pembelian)}</td></tr>
+              <tr class="indent"><td class="indent">* Stock Akhir (Solar 662L, Pertalite 5.720L, Pertamax 1.496L, PX Turbo 1.110L, Dexlite 1.191L)</td><td class="text-right">(${rpf(stokAkhir)})</td></tr>
+              <tr class="total-row"><td>HPP</td><td class="text-right" style="color:#CC0001">(${rpf(hpp)})</td></tr>
+              <tr style="background:#EBF8FF"><td style="padding:9px 13px;font-weight:700;color:#1A365D">Laba Kotor</td><td class="text-right" style="padding:9px 13px;font-weight:700;color:#1A365D">${rpf(labaKotor)}</td></tr>
+              <tr class="section-header"><td colspan="2">D/O di Pertamina (referensi)</td></tr>
+              <tr class="indent"><td class="indent">Solar 8.000L × Rp 6.538</td><td class="text-right">Rp 52.304.000</td></tr>
+              <tr class="indent"><td class="indent">Pertalite 16.000L × Rp 9.640</td><td class="text-right">Rp 154.240.000</td></tr>
+              <tr class="indent"><td class="indent">Pertamax 8.000L × Rp 11.960</td><td class="text-right">Rp 95.680.000</td></tr>
+              <tr class="indent"><td class="indent" style="color:var(--gray-400)">Pertamax Turbo · Dexlite</td><td class="text-right" style="color:var(--gray-400)">-</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="metrics-grid" style="margin-top:0">
+          <div class="metric-card blue"><div class="metric-label">Margin Kotor</div><div class="metric-value">${((labaKotor/omset)*100).toFixed(2)}%</div></div>
+          <div class="metric-card ${labaBersih>=0?'green':'red'}"><div class="metric-label">Margin Bersih</div><div class="metric-value">${((labaBersih/omset)*100).toFixed(2)}%</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-list-details" style="color:var(--orange)"></i>Biaya Operasional</div></div>
+          <div class="card-body" style="padding:0;max-height:280px;overflow-y:auto">
+            <table>
+              <thead><tr><th>#</th><th>Komponen</th><th class="text-right">Jumlah</th></tr></thead>
+              <tbody>
+                ${BIAYA_OPS.map((b,i)=>`<tr><td style="color:var(--gray-400)">${i+1}</td><td>${b.nm}</td><td class="text-right">${rpf(b.jml)}</td></tr>`).join('')}
+              </tbody>
+              <tfoot><tr><td colspan="2"><strong>Total Biaya Ops</strong></td><td class="text-right"><strong>${rpf(tOps)}</strong></td></tr></tfoot>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-list-details" style="color:#CC0001"></i>Biaya Non Operasional</div></div>
+          <div class="card-body" style="padding:0">
+            <table>
+              <thead><tr><th>#</th><th>Komponen</th><th class="text-right">Jumlah</th></tr></thead>
+              <tbody>
+                ${BIAYA_NON_OPS.map((b,i)=>`<tr><td style="color:var(--gray-400)">${i+1}</td><td>${b.nm}</td><td class="text-right" style="${b.cat==='bunga'?'color:#CC0001;font-weight:600':''}">${rpf(b.jml)}</td></tr>`).join('')}
+              </tbody>
+              <tfoot><tr><td colspan="2"><strong>Total Biaya Non Ops</strong></td><td class="text-right"><strong style="color:#CC0001">${rpf(tNonOps)}</strong></td></tr></tfoot>
+            </table>
+          </div>
+        </div>
+        <div style="padding:14px;background:${labaBersih>=0?'var(--green-light)':'var(--red-light)'};border-radius:10px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:14px;font-weight:700;color:${labaBersih>=0?'#1B5E20':'#B71C1C'}">LABA BERSIH</span>
+          <span style="font-size:20px;font-weight:700;color:${labaBersih>=0?'#1B5E20':'#B71C1C'}">${labaBersih<0?'-':''}${rpf(Math.abs(labaBersih))}</span>
+        </div>
+        <div class="alert alert-warning" style="margin-top:12px">
+          <i class="ti ti-alert-triangle"></i>
+          <span>Bunga bank Rp 143 Jt (BRI Rp 127,5 Jt + KUR Rp 10,6 Jt + BTN Rp 4,9 Jt) = <strong>49,8% dari laba kotor</strong> — penyebab utama laba bersih negatif.</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* === CASHFLOW / DANA PENGADAAN BBM === */
+function renderCashflow(){
+  const el=document.getElementById('cashflow-content');if(!el)return;
+  el.innerHTML=`
+    <div class="metrics-grid">
+      <div class="metric-card blue"><div class="metric-label">Saldo Kas Awal</div><div class="metric-value">Rp 177,9 Jt</div><div class="metric-sub">01 Maret 2026</div></div>
+      <div class="metric-card teal"><div class="metric-label">Rek. Ampra Awal</div><div class="metric-value">Rp 28,0 Jt</div><div class="metric-sub">01 Maret 2026</div></div>
+      <div class="metric-card green"><div class="metric-label">Saldo Kas Akhir</div><div class="metric-value">Rp 195,4 Jt</div><div class="metric-sub">31 Maret 2026</div></div>
+      <div class="metric-card orange"><div class="metric-label">Modal Usaha Akhir</div><div class="metric-value">Rp 612 Jt</div><div class="metric-sub">Per 31 Maret</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title"><i class="ti ti-arrows-exchange"></i>Posisi Dana Harian — Laporan Keadaan Dana Pengadaan BBM</div></div>
+      <div class="card-body" style="padding:0">
+        <div class="table-wrap" style="max-height:420px;overflow-y:auto">
+          <table>
+            <thead><tr><th>Tgl</th><th class="text-right">Saldo Kas</th><th class="text-right">Rek. Ampra</th><th class="text-right">Total Saldo</th><th class="text-right">Piutang</th><th class="text-right">Biaya SPBU</th><th class="text-right">Laba Harian</th></tr></thead>
+            <tbody>
+              ${DH.map(d=>{
+                const dt=new Date(d.tgl);
+                return`<tr>
+                  <td>${dt.getDate().toString().padStart(2,'0')} ${BBULAN[3]}</td>
+                  <td class="text-right">${rpf(d.kas)}</td>
+                  <td class="text-right">${rpf(d.ampra)}</td>
+                  <td class="text-right"><strong>${rpf(d.kas+d.ampra)}</strong></td>
+                  <td class="text-right" style="color:#CC0001">${rpf(d.piutang)}</td>
+                  <td class="text-right">${rpf(d.biaya)}</td>
+                  <td class="text-right" style="color:#2E7D32">${rpf(d.laba)}</td>
+                </tr>`;}).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title"><i class="ti ti-building-bank"></i>Dana Talangan BTN — Pemakaian Dana</div></div>
+      <div class="card-body">
+        <div class="alert alert-info"><i class="ti ti-info-circle"></i>Plafon dana talangan BTN: <strong>Rp 500.000.000</strong>. Per akhir periode (sheet Sheet1): saldo terpakai sekitar <strong>Rp 490 Jt</strong>. Angs. bunga BTN bulan Maret: <strong>Rp 4.902.500</strong>.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+          <div style="padding:12px;background:var(--blue-light);border-radius:9px;text-align:center">
+            <div style="font-size:10px;color:var(--blue-dark);margin-bottom:5px;font-weight:600">Plafon</div>
+            <div style="font-size:17px;font-weight:700;color:var(--blue-dark)">Rp 500 Jt</div>
+          </div>
+          <div style="padding:12px;background:var(--red-light);border-radius:9px;text-align:center">
+            <div style="font-size:10px;color:#B71C1C;margin-bottom:5px;font-weight:600">Terpakai</div>
+            <div style="font-size:17px;font-weight:700;color:#B71C1C">Rp 490 Jt</div>
+          </div>
+          <div style="padding:12px;background:var(--green-light);border-radius:9px;text-align:center">
+            <div style="font-size:10px;color:var(--green-dark);margin-bottom:5px;font-weight:600">Sisa Plafon</div>
+            <div style="font-size:17px;font-weight:700;color:var(--green-dark)">Rp 10 Jt</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* === BIAYA === */
+function renderBiaya(){
+  const el=document.getElementById('biaya-content');if(!el)return;
+  const tO=BIAYA_OPS.reduce((s,b)=>s+b.jml,0);
+  const tN=BIAYA_NON_OPS.reduce((s,b)=>s+b.jml,0);
+  el.innerHTML=`
+    <div class="metrics-grid">
+      <div class="metric-card orange"><div class="metric-label">Total Biaya Operasional</div><div class="metric-value">${rp(tO)}</div></div>
+      <div class="metric-card red"><div class="metric-label">Total Biaya Non Ops</div><div class="metric-value">${rp(tN)}</div></div>
+      <div class="metric-card red"><div class="metric-label">Grand Total</div><div class="metric-value">${rp(tO+tN)}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-tools" style="color:var(--orange)"></i>Biaya Operasional — Maret 2026</div></div>
+        <div class="card-body" style="padding:0">
+          <table>
+            <thead><tr><th>#</th><th>Komponen</th><th class="text-right">Jumlah (Rp)</th></tr></thead>
+            <tbody>${BIAYA_OPS.map((b,i)=>`<tr><td style="color:var(--gray-400)">${i+1}</td><td>${b.nm}</td><td class="text-right">${rpf(b.jml)}</td></tr>`).join('')}</tbody>
+            <tfoot><tr><td colspan="2"><strong>TOTAL</strong></td><td class="text-right"><strong>${rpf(tO)}</strong></td></tr></tfoot>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-receipt-2" style="color:#CC0001"></i>Biaya Non Operasional</div></div>
+        <div class="card-body" style="padding:0">
+          <table>
+            <thead><tr><th>#</th><th>Komponen</th><th>Kategori</th><th class="text-right">Jumlah (Rp)</th></tr></thead>
+            <tbody>${BIAYA_NON_OPS.map((b,i)=>`<tr>
+              <td style="color:var(--gray-400)">${i+1}</td><td>${b.nm}</td>
+              <td><span class="badge ${b.cat==='bunga'?'badge-danger':b.cat==='personal'?'badge-info':'badge-gray'}">${b.cat==='bunga'?'Bunga Bank':b.cat==='personal'?'Personal':'Lain'}</span></td>
+              <td class="text-right" style="${b.cat==='bunga'?'color:#CC0001;font-weight:600':''}">${rpf(b.jml)}</td>
+            </tr>`).join('')}</tbody>
+            <tfoot><tr><td colspan="3"><strong>TOTAL</strong></td><td class="text-right"><strong style="color:#CC0001">${rpf(tN)}</strong></td></tr></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* === GAJI === */
+function renderGaji(){
+  const el=document.getElementById('gaji-content');if(!el)return;
+  const detail=[
+    {tgl:'06 Mar',jml:22355000,ket:'Gaji Karyawan SPBU (shift pagi)'},
+    {tgl:'07 Mar',jml:17035000,ket:'Gaji Karyawan SPBU'},
+    {tgl:'10 Mar',jml:13770000,ket:'Gaji Karyawan SPBU'},
+    {tgl:'16 Mar',jml:24450000,ket:'Gaji Karyawan SPBU'},
+    {tgl:'17 Mar',jml:17800000,ket:'Gaji Karyawan SPBU'},
+    {tgl:'19 Mar',jml:1000000,ket:'Tambahan Gaji Karyawan'},
+  ];
+  const total=detail.reduce((s,r)=>s+r.jml,0);
+  el.innerHTML=`
+    <div class="metrics-grid">
+      <div class="metric-card blue"><div class="metric-label">Total Gaji Karyawan</div><div class="metric-value">${rpf(total)}</div><div class="metric-sub">Maret 2026</div></div>
+      <div class="metric-card orange"><div class="metric-label">BPJS Ketenagakerjaan</div><div class="metric-value">Rp 12.930.000</div></div>
+      <div class="metric-card teal"><div class="metric-label">Gaji ART</div><div class="metric-value">Rp 3.500.000</div><div class="metric-sub">Biaya non operasional</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title"><i class="ti ti-cash"></i>Rincian Gaji Karyawan — Maret 2026</div></div>
+      <div class="card-body" style="padding:0">
+        <table>
+          <thead><tr><th>Tanggal</th><th class="text-right">Jumlah (Rp)</th><th>Keterangan</th></tr></thead>
+          <tbody>${detail.map(r=>`<tr><td>${r.tgl}</td><td class="text-right"><strong>${rpf(r.jml)}</strong></td><td style="color:var(--gray-600)">${r.ket}</td></tr>`).join('')}</tbody>
+          <tfoot><tr><td><strong>TOTAL</strong></td><td class="text-right"><strong>${rpf(total)}</strong></td><td></td></tr></tfoot>
+        </table>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div style="padding:14px;background:var(--gray-50);border-radius:10px">
+        <div style="font-size:11px;font-weight:700;color:var(--gray-700);margin-bottom:9px">Penandatangan</div>
+        <div style="font-size:12px;color:var(--gray-600);line-height:2">
+          <div><strong>Diketahui:</strong> Ir. H. Ibrahim Mukti</div>
+          <div><strong>Jabatan:</strong> Pengusaha SPBU 74.912.01</div>
+          <div><strong>Dibuat oleh:</strong> Gazali</div>
+          <div><strong>Tanggal:</strong> 07 April 2026</div>
+        </div>
+      </div>
+      <div style="padding:14px;background:#FFF3E0;border-radius:10px">
+        <div style="font-size:11px;font-weight:700;color:#E65100;margin-bottom:9px">Catatan Kepegawaian</div>
+        <div style="font-size:12px;color:var(--gray-600);line-height:1.9">
+          Gaji karyawan dibayarkan dalam 6 tranggal pada Maret 2026.<br>
+          Gaji ART Rp 3.500.000 dicatat sebagai biaya non operasional (tgl 14 Maret).<br>
+          BPJS Rp 12.930.000 dibayarkan sekaligus (tgl 12 Maret).
+        </div>
+      </div>
+    </div>`;
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const dr=document.getElementById('dr-tgl');if(dr)dr.value='2026-03-01';
+});
+</script>
+</body>
+</html>
