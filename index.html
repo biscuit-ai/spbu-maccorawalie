@@ -1550,14 +1550,85 @@ async function loadKelolaUser() {
   const rows = data||[];
   const roleMap = {owner:'bg-o',manager:'bg-g',admin:'bg-b'};
   document.getElementById('user-list-table').innerHTML =
-    '<div class="tw"><table><thead><tr><th>Nama</th><th>Email</th><th>Role</th><th>SPBU</th><th>Status</th></tr></thead>' +
+    '<div class="tw"><table><thead><tr>' +
+    '<th>Nama</th><th>Email</th><th>Role</th><th>SPBU</th><th>Status</th><th class="tc">Aksi</th>' +
+    '</tr></thead>' +
     '<tbody>'+rows.map(r=>
-      '<tr><td><strong>'+r.nama+'</strong></td><td style="font-size:11px">'+r.email+'</td>' +
+      '<tr>' +
+      '<td><strong>'+r.nama+'</strong></td>' +
+      '<td style="font-size:11px;color:var(--gray-500)">'+r.email+'</td>' +
       '<td><span class="bdg '+(roleMap[r.role]||'bg-gray')+'">'+r.role+'</span></td>' +
-      '<td>'+(r.spbu?r.spbu.kode+' — '+r.spbu.nama:'<span style="color:var(--gray-400)">Semua SPBU</span>')+'</td>' +
+      '<td style="font-size:12px">'+(r.spbu?r.spbu.kode+' — '+r.spbu.nama:'<span style="color:var(--gray-400)">Semua SPBU</span>')+'</td>' +
       '<td><span class="bdg '+(r.aktif?'bg-g':'bg-r')+'">'+(r.aktif?'Aktif':'Nonaktif')+'</span></td>' +
+      '<td class="tc" style="white-space:nowrap">' +
+        // Edit button
+        '<button class="bti" onclick="openEditUser(\''+r.id+'\',\''+r.nama+'\',\''+r.email+'\',\''+r.role+'\',\''+(r.spbu_id||'')+'\',\''+r.aktif+'\')" title="Edit" style="margin-right:4px"><i class="ti ti-pencil"></i></button>' +
+        // Toggle aktif/nonaktif (jangan bisa nonaktifkan owner sendiri)
+        (r.role !== 'owner' ?
+          '<button class="bti" onclick="toggleAktifUser(\''+r.id+'\','+r.aktif+')" title="'+(r.aktif?'Nonaktifkan':'Aktifkan')+'" style="margin-right:4px">' +
+          '<i class="ti '+(r.aktif?'ti-user-off':'ti-user-check')+'"></i></button>' : '') +
+        // Hapus (jangan bisa hapus owner)
+        (r.role !== 'owner' ?
+          '<button class="bti d" onclick="hapusUser(\''+r.id+'\',\''+r.nama+'\')" title="Hapus">' +
+          '<i class="ti ti-trash"></i></button>' : '') +
+      '</td>' +
       '</tr>'
     ).join('')+'</tbody></table></div>';
+}
+
+async function openEditUser(id, nama, email, role, spbuId, aktif) {
+  S.editId = id;
+  document.getElementById('mu-nama').value  = nama;
+  document.getElementById('mu-email').value = email;
+  document.getElementById('mu-pass').value  = '';
+  document.getElementById('mu-role').value  = role;
+  document.getElementById('mu-spbu').value  = spbuId||'';
+  // Ubah judul modal
+  document.querySelector('#modal-user .mt').textContent = 'Edit User — '+nama;
+  // Ubah tombol simpan
+  document.querySelector('#modal-user .mf .btn-p').setAttribute('onclick','saveEditUser()');
+  document.getElementById('modal-user').classList.add('on');
+}
+
+async function saveEditUser() {
+  const id    = S.editId;
+  const nama  = document.getElementById('mu-nama').value.trim();
+  const email = document.getElementById('mu-email').value.trim();
+  const pass  = document.getElementById('mu-pass').value;
+  const role  = document.getElementById('mu-role').value;
+  const spbuId = document.getElementById('mu-spbu').value || null;
+  if (!nama||!email) { alert('Nama dan email wajib diisi!'); return; }
+  const update = { nama, email, role, spbu_id: spbuId };
+  if (pass) update.password_hash = pass; // hanya update password kalau diisi
+  const { error } = await db.from('users').update(update).eq('id', id);
+  if (error) { alert('Gagal update: '+error.message); return; }
+  // Reset modal ke mode tambah
+  resetModalUser();
+  closeModal('modal-user');
+  loadKelolaUser();
+}
+
+async function toggleAktifUser(id, aktif) {
+  const newStatus = !aktif;
+  const label = newStatus ? 'aktifkan' : 'nonaktifkan';
+  if (!confirm('Yakin ingin '+label+' user ini?')) return;
+  const { error } = await db.from('users').update({ aktif: newStatus }).eq('id', id);
+  if (error) { alert('Gagal: '+error.message); return; }
+  loadKelolaUser();
+}
+
+async function hapusUser(id, nama) {
+  if (!confirm('Hapus user "'+nama+'" secara permanen?\nData yang sudah diinput tidak akan terhapus.')) return;
+  const { error } = await db.from('users').delete().eq('id', id);
+  if (error) { alert('Gagal hapus: '+error.message); return; }
+  loadKelolaUser();
+}
+
+function resetModalUser() {
+  document.querySelector('#modal-user .mt').textContent = 'Tambah User Baru';
+  document.querySelector('#modal-user .mf .btn-p').setAttribute('onclick','tambahUser()');
+  ['mu-nama','mu-email','mu-pass'].forEach(id => { const e=document.getElementById(id); if(e)e.value=''; });
+  S.editId = null;
 }
 
 async function tambahUser() {
@@ -1569,6 +1640,7 @@ async function tambahUser() {
   if (!nama||!email||!pass) { alert('Nama, email, dan password wajib diisi!'); return; }
   const { error } = await db.from('users').insert({nama, email, password_hash:pass, role, spbu_id:spbuId});
   if (error) { alert('Gagal: '+error.message); return; }
+  resetModalUser();
   closeModal('modal-user');
   loadKelolaUser();
 }
