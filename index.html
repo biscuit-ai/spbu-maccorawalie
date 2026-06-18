@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -316,6 +317,7 @@ tfoot td{padding:9px 11px;border-top:2px solid var(--gray-200);font-weight:700;b
         <button class="ni" onclick="showPage('monitor')" data-page="monitor"><i class="ti ti-eye"></i>Monitor Penjualan</button>
         <button class="ni" onclick="showPage('stock')" data-page="stock"><i class="ti ti-stack"></i>Laporan Stock</button>
         <button class="ni" onclick="showPage('edit-transaksi')" data-page="edit-transaksi"><i class="ti ti-edit"></i>Edit Transaksi</button>
+        <button class="ni" onclick="showPage('upload-excel')" data-page="upload-excel"><i class="ti ti-file-upload"></i>Upload Data Excel</button>
       </div>
       <!-- OWNER -->
       <div id="nav-owner">
@@ -327,6 +329,7 @@ tfoot td{padding:9px 11px;border-top:2px solid var(--gray-200);font-weight:700;b
         <button class="ni" onclick="showPage('cashflow')" data-page="cashflow"><i class="ti ti-arrows-exchange"></i>Dana Pengadaan</button>
         <button class="ni" onclick="showPage('biaya')" data-page="biaya"><i class="ti ti-receipt"></i>Laporan Biaya</button>
         <button class="ni" onclick="showPage('gaji')" data-page="gaji"><i class="ti ti-cash"></i>Gaji Karyawan</button>
+        <button class="ni" onclick="showPage('upload-excel')" data-page="upload-excel"><i class="ti ti-file-upload"></i>Upload Data Excel</button>
         <button class="ni" onclick="showPage('kelola-spbu')" data-page="kelola-spbu"><i class="ti ti-building"></i>Kelola SPBU</button>
         <button class="ni" onclick="showPage('kelola-user')" data-page="kelola-user"><i class="ti ti-users"></i>Kelola User</button>
       </div>
@@ -551,6 +554,78 @@ tfoot td{padding:9px 11px;border-top:2px solid var(--gray-200);font-weight:700;b
         <div class="ph"><h2>Gaji Karyawan</h2><p>Rekap penggajian per SPBU per bulan</p></div>
         <div class="rf"><select id="gj-bulan" onchange="loadGaji()"><option value="3">Maret 2026</option></select></div>
         <div id="gj-content"></div>
+      </div>
+
+
+      <!-- UPLOAD EXCEL -->
+      <div class="pg" id="pg-upload-excel">
+        <div class="ph"><h2>Upload Data Excel</h2><p>Import data historis dari file Excel per SPBU per periode</p></div>
+        <div id="alert-upload" style="display:none"></div>
+
+        <div class="card">
+          <div class="ch"><div class="ct"><i class="ti ti-settings"></i>Pengaturan Upload</div></div>
+          <div class="cb">
+            <div class="fr">
+              <div class="ig">
+                <label>SPBU</label>
+                <select id="up-spbu"></select>
+              </div>
+              <div class="ig">
+                <label>Bulan</label>
+                <select id="up-bulan">
+                  <option value="1">Januari</option><option value="2">Februari</option>
+                  <option value="3">Maret</option><option value="4">April</option>
+                  <option value="5">Mei</option><option value="6">Juni</option>
+                  <option value="7">Juli</option><option value="8">Agustus</option>
+                  <option value="9">September</option><option value="10">Oktober</option>
+                  <option value="11">November</option><option value="12">Desember</option>
+                </select>
+              </div>
+              <div class="ig">
+                <label>Tahun</label>
+                <select id="up-tahun">
+                  <option>2026</option><option>2025</option><option>2024</option>
+                  <option>2023</option><option>2022</option><option>2021</option><option>2020</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="ch"><div class="ct"><i class="ti ti-file-upload"></i>Pilih File Excel</div></div>
+          <div class="cb">
+            <div id="drop-zone" onclick="document.getElementById('file-input').click()"
+              style="border:2px dashed var(--gray-300);border-radius:12px;padding:40px;text-align:center;cursor:pointer;transition:.2s;background:var(--gray-50)">
+              <i class="ti ti-file-spreadsheet" style="font-size:48px;color:var(--gray-300);display:block;margin-bottom:12px"></i>
+              <div style="font-size:14px;font-weight:600;color:var(--gray-600);margin-bottom:6px">Klik untuk pilih file Excel</div>
+              <div style="font-size:12px;color:var(--gray-400)">Format: .xlsx · Format standar laporan keuangan SPBU</div>
+            </div>
+            <input type="file" id="file-input" accept=".xlsx,.xls" style="display:none" onchange="handleFileUpload(this)">
+            <div id="file-preview" style="display:none;margin-top:14px;padding:12px 16px;background:var(--green-light);border-radius:10px;border:1px solid #C6F6D5;display:none;align-items:center;gap:12px">
+              <i class="ti ti-file-check" style="font-size:24px;color:var(--green-dark)"></i>
+              <div>
+                <div id="file-name" style="font-size:13px;font-weight:600;color:var(--green-dark)"></div>
+                <div id="file-size" style="font-size:11px;color:var(--green)"></div>
+              </div>
+              <button onclick="clearFile()" style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:18px">×</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PREVIEW DATA -->
+        <div class="card" id="preview-card" style="display:none">
+          <div class="ch">
+            <div class="ct"><i class="ti ti-table"></i>Preview Data yang Akan Diimport</div>
+            <span id="preview-count" class="bdg bg-b"></span>
+          </div>
+          <div id="preview-table" class="cb" style="padding:0"></div>
+        </div>
+
+        <div id="upload-actions" style="display:none;display:none;justify-content:flex-end;gap:9px;margin-top:4px">
+          <button class="btn btn-s" onclick="clearFile()"><i class="ti ti-x"></i>Batal</button>
+          <button class="btn btn-p" id="btn-import" onclick="importData()"><i class="ti ti-database-import"></i>Import ke Database</button>
+        </div>
       </div>
 
       <!-- KELOLA SPBU -->
@@ -787,6 +862,7 @@ function showPage(id) {
     'cashflow':       loadCashflow,
     'biaya':          loadBiaya,
     'gaji':           loadGaji,
+    'upload-excel':   initUploadPage,
     'kelola-spbu':    loadKelolaSPBU,
     'kelola-user':    loadKelolaUser,
   };
@@ -1659,6 +1735,212 @@ function mc(col, label, value, sub, icon) {
     '<div class="mv">'+value+'</div>' +
     (sub?'<div class="ms">'+sub+'</div>':'') +
     '<i class="ti '+icon+' mi"></i></div>';
+}
+
+// ============================================================
+// UPLOAD EXCEL
+// ============================================================
+let uploadedWorkbook = null;
+let parsedRows = [];
+
+function initUploadPage() {
+  // Populate SPBU select
+  const sel = document.getElementById('up-spbu');
+  if (!sel) return;
+  const options = S.role === 'manager'
+    ? S.spbuList.filter(s => s.id === S.spbuId)
+    : S.spbuList;
+  sel.innerHTML = options.map(s => '<option value="'+s.id+'">'+s.kode+' — '+s.nama+'</option>').join('');
+
+  // Set current month/year
+  const now = new Date();
+  const bulanSel = document.getElementById('up-bulan');
+  const tahunSel = document.getElementById('up-tahun');
+  if (bulanSel) bulanSel.value = now.getMonth() + 1;
+  if (tahunSel) tahunSel.value = now.getFullYear();
+
+  // Drag and drop
+  const dz = document.getElementById('drop-zone');
+  if (dz && !dz._dnd) {
+    dz._dnd = true;
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor='#CC0001'; dz.style.background='var(--red-light)'; });
+    dz.addEventListener('dragleave', () => { dz.style.borderColor='var(--gray-300)'; dz.style.background='var(--gray-50)'; });
+    dz.addEventListener('drop', e => {
+      e.preventDefault();
+      dz.style.borderColor='var(--gray-300)'; dz.style.background='var(--gray-50)';
+      const file = e.dataTransfer.files[0];
+      if (file) processFile(file);
+    });
+  }
+}
+
+function handleFileUpload(input) {
+  const file = input.files[0];
+  if (file) processFile(file);
+}
+
+function processFile(file) {
+  if (!file.name.match(/\.xlsx?$/i)) {
+    showAlert('alert-upload', 'err', 'File harus berformat .xlsx atau .xls');
+    return;
+  }
+
+  // Show file info
+  const prev = document.getElementById('file-preview');
+  document.getElementById('file-name').textContent = file.name;
+  document.getElementById('file-size').textContent = (file.size/1024).toFixed(1) + ' KB';
+  prev.style.display = 'flex';
+
+  // Read file
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      uploadedWorkbook = XLSX.read(e.target.result, { type: 'array' });
+      parseExcel();
+    } catch(err) {
+      showAlert('alert-upload', 'err', 'Gagal membaca file: ' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function parseExcel() {
+  if (!uploadedWorkbook) return;
+  parsedRows = [];
+
+  const bln  = parseInt(document.getElementById('up-bulan').value);
+  const thn  = parseInt(document.getElementById('up-tahun').value);
+
+  // Cari sheet Penjualan
+  const sheetNames = uploadedWorkbook.SheetNames;
+  const penjualanSheet = sheetNames.find(n => n.toLowerCase().includes('penjualan') || n.toLowerCase().includes('jun') || n.toLowerCase().includes('may') || n.toLowerCase().includes('mar') || n.toLowerCase().includes('apr') || n.toLowerCase().includes('jan') || n.toLowerCase().includes('feb'));
+  const targetSheet = penjualanSheet || sheetNames[0];
+  const ws = uploadedWorkbook.Sheets[targetSheet];
+  const raw = XLSX.utils.sheet_to_json(ws, { header:1, defval:'' });
+
+  // Parse baris data — cari baris dengan angka tanggal di kolom pertama
+  raw.forEach(row => {
+    const tglVal = row[0];
+    if (!tglVal || typeof tglVal !== 'number' || tglVal < 1 || tglVal > 31) return;
+
+    const tgl = thn + '-' + String(bln).padStart(2,'0') + '-' + String(Math.round(tglVal)).padStart(2,'0');
+
+    // Coba parse volume BBM dari kolom-kolom yang ada angka
+    const nums = row.map(v => typeof v === 'number' ? v : parseFloat(String(v).replace(/[^0-9.-]/g,''))||0);
+
+    parsedRows.push({
+      tanggal:      tgl,
+      vol_pertalite: nums[2] || nums[3] || 0,
+      vol_pertamax:  nums[4] || nums[5] || 0,
+      vol_solar:     nums[6] || nums[7] || 0,
+      vol_dexlite:   nums[8] || nums[9] || 0,
+      biaya_spbu:    nums[12] || nums[11] || 0,
+      piutang:       nums[13] || 0,
+      saldo_kas:     nums[14] || 0,
+      saldo_ampra:   nums[15] || 0,
+      laba_harian:   nums[16] || 0,
+    });
+  });
+
+  if (!parsedRows.length) {
+    showAlert('alert-upload', 'err', 'Tidak ada data yang bisa dibaca. Pastikan format file benar.');
+    return;
+  }
+
+  showPreview();
+}
+
+function showPreview() {
+  const card = document.getElementById('preview-card');
+  const table = document.getElementById('preview-table');
+  const count = document.getElementById('preview-count');
+  const actions = document.getElementById('upload-actions');
+
+  count.textContent = parsedRows.length + ' baris data';
+  card.style.display = 'block';
+  actions.style.display = 'flex';
+
+  table.innerHTML = '<div class="tw" style="max-height:300px;overflow-y:auto"><table>' +
+    '<thead><tr><th>Tanggal</th><th class="tr">Pertalite (L)</th><th class="tr">Pertamax (L)</th><th class="tr">Solar (L)</th><th class="tr">Dexlite (L)</th><th class="tr">Biaya SPBU</th><th class="tr">Saldo Kas</th></tr></thead>' +
+    '<tbody>' + parsedRows.slice(0,10).map(r =>
+      '<tr>' +
+      '<td>'+r.tanggal+'</td>' +
+      '<td class="tr">'+fn(r.vol_pertalite)+'</td>' +
+      '<td class="tr">'+fn(r.vol_pertamax)+'</td>' +
+      '<td class="tr">'+fn(r.vol_solar)+'</td>' +
+      '<td class="tr">'+fn(r.vol_dexlite)+'</td>' +
+      '<td class="tr">'+rpf(r.biaya_spbu)+'</td>' +
+      '<td class="tr">'+rpf(r.saldo_kas)+'</td>' +
+      '</tr>'
+    ).join('') +
+    (parsedRows.length > 10 ? '<tr><td colspan="7" style="text-align:center;color:var(--gray-400);padding:12px">... dan '+(parsedRows.length-10)+' baris lainnya</td></tr>' : '') +
+    '</tbody></table></div>';
+}
+
+async function importData() {
+  if (!parsedRows.length) return;
+  const spbuId = document.getElementById('up-spbu').value;
+  const bln    = document.getElementById('up-bulan').value;
+  const thn    = document.getElementById('up-tahun').value;
+  const btn    = document.getElementById('btn-import');
+  const spbu   = S.spbuList.find(s => s.id === spbuId);
+  const blnNm  = BULAN[parseInt(bln)];
+
+  // Cek duplikat — ambil data existing periode ini
+  const from = thn+'-'+String(bln).padStart(2,'0')+'-01';
+  const to   = thn+'-'+String(bln).padStart(2,'0')+'-31';
+  const { data: existing } = await db.from('transaksi_harian')
+    .select('id').eq('spbu_id', spbuId).gte('tanggal', from).lte('tanggal', to);
+
+  if (existing && existing.length > 0) {
+    // Ada data duplikat — tampilkan konfirmasi
+    const konfirmasi = confirm(
+      'Data ' + blnNm + ' ' + thn + ' — ' + spbu?.nama + ' sudah pernah diupload sebelumnya.\n\n' +
+      'Tekan OK untuk Upload & Perbarui Data, atau Batal untuk membatalkan.'
+    );
+    if (!konfirmasi) return;
+
+    // Hapus data lama dulu
+    await db.from('transaksi_harian').delete()
+      .eq('spbu_id', spbuId).gte('tanggal', from).lte('tanggal', to);
+  }
+
+  // Import semua baris
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner" style="width:16px;height:16px;border-width:2px"></div> Mengimport...';
+
+  const rows = parsedRows.map(r => ({ ...r, spbu_id: spbuId }));
+
+  // Import per batch 50 baris
+  const batchSize = 50;
+  let imported = 0;
+  for (let i = 0; i < rows.length; i += batchSize) {
+    const batch = rows.slice(i, i + batchSize);
+    const { error } = await db.from('transaksi_harian').insert(batch);
+    if (error) {
+      showAlert('alert-upload', 'err', 'Gagal import: ' + error.message);
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ti ti-database-import"></i>Import ke Database';
+      return;
+    }
+    imported += batch.length;
+  }
+
+  showAlert('alert-upload', 'ok',
+    imported + ' data berhasil diimport ke ' + spbu?.nama + ' — ' + blnNm + ' ' + thn + '!');
+  clearFile();
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="ti ti-database-import"></i>Import ke Database';
+}
+
+function clearFile() {
+  uploadedWorkbook = null;
+  parsedRows = [];
+  document.getElementById('file-input').value = '';
+  document.getElementById('file-preview').style.display = 'none';
+  document.getElementById('preview-card').style.display = 'none';
+  document.getElementById('upload-actions').style.display = 'none';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
