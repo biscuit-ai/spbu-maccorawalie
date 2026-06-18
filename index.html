@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -1753,12 +1752,22 @@ function initUploadPage() {
     : S.spbuList;
   sel.innerHTML = options.map(s => '<option value="'+s.id+'">'+s.kode+' — '+s.nama+'</option>').join('');
 
-  // Set current month/year
-  const now = new Date();
+  // TIDAK auto-set bulan/tahun ke tanggal hari ini — ini fitur upload DATA HISTORIS,
+  // jadi user HARUS pilih manual sesuai file yang diupload. Auto-select bisa
+  // menyebabkan salah simpan tanggal kalau user lupa ganti dropdown.
   const bulanSel = document.getElementById('up-bulan');
   const tahunSel = document.getElementById('up-tahun');
-  if (bulanSel) bulanSel.value = now.getMonth() + 1;
-  if (tahunSel) tahunSel.value = now.getFullYear();
+  if (bulanSel && !bulanSel._initialized) {
+    bulanSel._initialized = true;
+    bulanSel.insertAdjacentHTML('afterbegin', '<option value="" selected disabled>-- Pilih Bulan --</option>');
+  }
+  if (tahunSel && !tahunSel._initialized) {
+    tahunSel._initialized = true;
+    tahunSel.insertAdjacentHTML('afterbegin', '<option value="" selected disabled>-- Pilih Tahun --</option>');
+  }
+
+  // Reset file state setiap kali halaman dibuka, supaya tidak ada sisa file lama
+  clearFile();
 
   // Drag and drop
   const dz = document.getElementById('drop-zone');
@@ -1783,6 +1792,13 @@ function handleFileUpload(input) {
 function processFile(file) {
   if (!file.name.match(/\.xlsx?$/i)) {
     showAlert('alert-upload', 'err', 'File harus berformat .xlsx atau .xls');
+    return;
+  }
+
+  const bln = document.getElementById('up-bulan').value;
+  const thn = document.getElementById('up-tahun').value;
+  if (!bln || !thn) {
+    showAlert('alert-upload', 'err', 'Pilih Bulan dan Tahun terlebih dahulu sebelum upload file, sesuai periode data di file Excel.');
     return;
   }
 
@@ -1940,6 +1956,11 @@ function showPreview() {
   const count = document.getElementById('preview-count');
   const actions = document.getElementById('upload-actions');
 
+  const bln = parseInt(document.getElementById('up-bulan').value);
+  const thn = document.getElementById('up-tahun').value;
+  const spbuId = document.getElementById('up-spbu').value;
+  const spbu = S.spbuList.find(s => s.id === spbuId);
+
   count.textContent = parsedRows.length + ' baris data';
   card.style.display = 'block';
   actions.style.display = 'flex';
@@ -1954,7 +1975,11 @@ function showPreview() {
     if (r._anomali) anomali++;
   });
 
-  table.innerHTML = '<div class="tw" style="max-height:300px;overflow-y:auto"><table>' +
+  table.innerHTML =
+    '<div class="alrt alrt-info" style="margin:13px 17px 0;border-radius:8px">' +
+    '<i class="ti ti-info-circle"></i><span>Akan diimport sebagai: <strong>' + BULAN[bln] + ' ' + thn + ' — ' + (spbu?.nama||'-') + '</strong>. Periksa kembali sebelum klik Import.</span>' +
+    '</div>' +
+    '<div class="tw" style="max-height:300px;overflow-y:auto;margin-top:13px"><table>' +
     '<thead><tr><th>Tanggal</th><th class="tr">Pertalite (L)</th><th class="tr">Pertamax (L)</th><th class="tr">Solar (L)</th><th class="tr">Dexlite (L)</th><th class="tr">Biaya SPBU</th><th class="tr">Saldo Kas</th><th class="tc">Cek</th></tr></thead>' +
     '<tbody>' + parsedRows.slice(0,15).map(r =>
       '<tr style="'+(r._anomali?'background:var(--orange-light)':'')+'">' +
