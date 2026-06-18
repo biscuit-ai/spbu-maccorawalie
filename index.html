@@ -1050,7 +1050,7 @@ async function loadMonitor() {
   const bln  = document.getElementById('mon-bulan')?.value || '3';
   const thn  = document.getElementById('mon-tahun')?.value || '2026';
   const from = thn+'-'+bln.padStart(2,'0')+'-01';
-  const to   = thn+'-'+bln.padStart(2,'0')+'-31';
+  const to   = thn+'-'+bln.padStart(2,'0')+'-'+String(daysInMonth(parseInt(bln),parseInt(thn))).padStart(2,'0');
   const spbuId = currentSPBUId();
 
   let q = db.from('transaksi_harian')
@@ -1118,7 +1118,7 @@ async function loadStock() {
   const bln = document.getElementById('st-bulan')?.value||'3';
   const jenis = document.getElementById('st-jenis')?.value||'pertalite';
   const from = '2026-'+bln.padStart(2,'0')+'-01';
-  const to   = '2026-'+bln.padStart(2,'0')+'-31';
+  const to   = '2026-'+bln.padStart(2,'0')+'-'+String(daysInMonth(parseInt(bln),2026)).padStart(2,'0');
 
   loading('st-table');
   const { data } = await db.from('stock_harian')
@@ -1170,7 +1170,7 @@ async function loadEditTable() {
   const bln = document.getElementById('et-bulan')?.value||'3';
   const thn = document.getElementById('et-tahun')?.value||'2026';
   const from = thn+'-'+bln.padStart(2,'0')+'-01';
-  const to   = thn+'-'+bln.padStart(2,'0')+'-31';
+  const to   = thn+'-'+bln.padStart(2,'0')+'-'+String(daysInMonth(parseInt(bln),parseInt(thn))).padStart(2,'0');
   loading('et-table');
   let q = db.from('transaksi_harian').select('*, spbu:spbu_id(kode,nama)')
     .gte('tanggal',from).lte('tanggal',to).order('tanggal');
@@ -1374,7 +1374,7 @@ async function loadMonthly() {
   const bln = document.getElementById('mr-bulan')?.value||'3';
   const thn = document.getElementById('mr-tahun')?.value||'2026';
   const from = thn+'-'+bln.padStart(2,'0')+'-01';
-  const to   = thn+'-'+bln.padStart(2,'0')+'-31';
+  const to   = thn+'-'+bln.padStart(2,'0')+'-'+String(daysInMonth(parseInt(bln),parseInt(thn))).padStart(2,'0');
   const spbuId = currentSPBUId();
   let q = db.from('transaksi_harian').select('*').gte('tanggal',from).lte('tanggal',to);
   if (spbuId) q = q.eq('spbu_id', spbuId);
@@ -1423,7 +1423,7 @@ async function loadLabaRugi() {
   const bln = document.getElementById('lr-bulan')?.value||'3';
   const thn = document.getElementById('lr-tahun')?.value||'2026';
   const from = thn+'-'+bln.padStart(2,'0')+'-01';
-  const to   = thn+'-'+bln.padStart(2,'0')+'-31';
+  const to   = thn+'-'+bln.padStart(2,'0')+'-'+String(daysInMonth(parseInt(bln),parseInt(thn))).padStart(2,'0');
   const spbuId = currentSPBUId() || S.spbuList[0]?.id;
   let q = db.from('transaksi_harian').select('*').gte('tanggal',from).lte('tanggal',to);
   if (spbuId) q = q.eq('spbu_id', spbuId);
@@ -1490,7 +1490,7 @@ async function loadCashflow() {
   el.innerHTML = '<div class="loading"><div class="spinner"></div><span>Memuat...</span></div>';
   const bln = document.getElementById('cf-bulan')?.value||'3';
   const from = '2026-'+bln.padStart(2,'0')+'-01';
-  const to   = '2026-'+bln.padStart(2,'0')+'-31';
+  const to   = '2026-'+bln.padStart(2,'0')+'-'+String(daysInMonth(parseInt(bln),2026)).padStart(2,'0');
   const spbuId = currentSPBUId();
   let q = db.from('transaksi_harian').select('*, spbu:spbu_id(kode,nama)')
     .gte('tanggal',from).lte('tanggal',to).order('tanggal');
@@ -1528,7 +1528,7 @@ async function loadBiaya() {
   el.innerHTML = '<div class="loading"><div class="spinner"></div><span>Memuat...</span></div>';
   const bln = document.getElementById('by-bulan')?.value||'3';
   const from = '2026-'+bln.padStart(2,'0')+'-01';
-  const to   = '2026-'+bln.padStart(2,'0')+'-31';
+  const to   = '2026-'+bln.padStart(2,'0')+'-'+String(daysInMonth(parseInt(bln),2026)).padStart(2,'0');
   const spbuId = currentSPBUId();
   let q = db.from('biaya').select('*').gte('tanggal',from).lte('tanggal',to).order('tanggal');
   if (spbuId) q = q.eq('spbu_id', spbuId);
@@ -1566,7 +1566,7 @@ async function loadGaji() {
   el.innerHTML = '<div class="loading"><div class="spinner"></div><span>Memuat...</span></div>';
   const bln = document.getElementById('gj-bulan')?.value||'3';
   const from = '2026-'+bln.padStart(2,'0')+'-01';
-  const to   = '2026-'+bln.padStart(2,'0')+'-31';
+  const to   = '2026-'+bln.padStart(2,'0')+'-'+String(daysInMonth(parseInt(bln),2026)).padStart(2,'0');
   const spbuId = currentSPBUId();
   let q = db.from('biaya').select('*, spbu:spbu_id(kode,nama)')
     .eq('nama_biaya','Gaji Karyawan').gte('tanggal',from).lte('tanggal',to).order('tanggal');
@@ -1804,47 +1804,130 @@ function processFile(file) {
   reader.readAsArrayBuffer(file);
 }
 
+function daysInMonth(bln, thn) {
+  return new Date(thn, bln, 0).getDate();
+}
+
 function parseExcel() {
   if (!uploadedWorkbook) return;
   parsedRows = [];
 
   const bln  = parseInt(document.getElementById('up-bulan').value);
   const thn  = parseInt(document.getElementById('up-tahun').value);
+  const maxHari = daysInMonth(bln, thn);
 
-  // Cari sheet Penjualan
+  // Cari sheet 'Penjualan' secara eksplisit
   const sheetNames = uploadedWorkbook.SheetNames;
-  const penjualanSheet = sheetNames.find(n => n.toLowerCase().includes('penjualan') || n.toLowerCase().includes('jun') || n.toLowerCase().includes('may') || n.toLowerCase().includes('mar') || n.toLowerCase().includes('apr') || n.toLowerCase().includes('jan') || n.toLowerCase().includes('feb'));
-  const targetSheet = penjualanSheet || sheetNames[0];
-  const ws = uploadedWorkbook.Sheets[targetSheet];
-  const raw = XLSX.utils.sheet_to_json(ws, { header:1, defval:'' });
+  const targetSheetName = sheetNames.find(n => n.trim().toLowerCase() === 'penjualan') || sheetNames.find(n => n.toLowerCase().includes('penjualan'));
 
-  // Parse baris data — cari baris dengan angka tanggal di kolom pertama
-  raw.forEach(row => {
-    const tglVal = row[0];
-    if (!tglVal || typeof tglVal !== 'number' || tglVal < 1 || tglVal > 31) return;
+  if (!targetSheetName) {
+    showAlert('alert-upload', 'err', 'Sheet "Penjualan" tidak ditemukan di file ini.');
+    return;
+  }
 
-    const tgl = thn + '-' + String(bln).padStart(2,'0') + '-' + String(Math.round(tglVal)).padStart(2,'0');
+  const ws = uploadedWorkbook.Sheets[targetSheetName];
+  // header:1 -> array of arrays, index kolom: A=0, B=1, C=2, D=3, ... I=8, ... Z=25
+  const raw = XLSX.utils.sheet_to_json(ws, { header:1, defval:null });
 
-    // Coba parse volume BBM dari kolom-kolom yang ada angka
-    const nums = row.map(v => typeof v === 'number' ? v : parseFloat(String(v).replace(/[^0-9.-]/g,''))||0);
+  const COL_A = 0;   // nomor tanggal
+  const COL_D = 3;   // volume BBM
+  const COL_I = 8;   // nilai keuangan
+  const COL_Z = 25;  // saldo ampra
+
+  // 1. Temukan semua baris index (0-based) yang punya angka tanggal valid (1-31) di kolom A
+  const dateRowIdx = [];
+  raw.forEach((row, i) => {
+    const v = row[COL_A];
+    if (typeof v === 'number' && v >= 1 && v <= 31 && Number.isInteger(v)) {
+      dateRowIdx.push(i);
+    }
+  });
+
+  if (!dateRowIdx.length) {
+    showAlert('alert-upload', 'err', 'Tidak ditemukan blok data tanggal di sheet Penjualan. Pastikan format file sesuai template SPBU.');
+    return;
+  }
+
+  let skippedInvalidDate = 0;
+
+  // 2. Untuk setiap blok tanggal, cari data pakai label teks (bukan offset fix)
+  dateRowIdx.forEach((startIdx, idx) => {
+    const endIdx = (idx + 1 < dateRowIdx.length) ? dateRowIdx[idx+1] : raw.length;
+    const tglNum = Math.round(raw[startIdx][COL_A]);
+
+    // Lewati tanggal yang tidak valid untuk bulan ini (misal 31 Feb, 31 Apr, dst)
+    if (tglNum > maxHari) { skippedInvalidDate++; return; }
+
+    // Volume BBM: offset tetap +0 s/d +5 dari startIdx (Plk, Pertalite, Pertamax, Solar, Dexlite, PxTurbo)
+    const volPlk      = raw[startIdx+0]?.[COL_D] || 0;
+    const volPertalite = raw[startIdx+1]?.[COL_D] || 0;
+    const volPertamax  = raw[startIdx+2]?.[COL_D] || 0;
+    const volSolar      = raw[startIdx+3]?.[COL_D] || 0;
+    const volDexlite     = raw[startIdx+4]?.[COL_D] || 0;
+    const volPxTurbo     = raw[startIdx+5]?.[COL_D] || 0;
+
+    // Cari baris dengan label "biaya", "piutang", "pertamina" (case-insensitive, partial match)
+    let biayaRow = null, piutangRow = null, pertaminaRow = null;
+    for (let r = startIdx; r < endIdx; r++) {
+      const label = raw[r]?.[COL_D];
+      if (typeof label === 'string') {
+        const lower = label.toLowerCase();
+        if (biayaRow === null && lower.includes('biaya')) biayaRow = r;
+        if (piutangRow === null && lower.includes('piutang')) piutangRow = r;
+        if (pertaminaRow === null && lower.includes('pertamina')) pertaminaRow = r;
+      }
+    }
+
+    // Total Jual: nilai kolom I tepat SEBELUM baris "biaya"
+    let totalJual = 0;
+    if (biayaRow !== null) {
+      for (let r = biayaRow - 1; r >= startIdx; r--) {
+        const v = raw[r]?.[COL_I];
+        if (typeof v === 'number') { totalJual = v; break; }
+      }
+    }
+
+    const biayaSpbu  = biayaRow   !== null ? (raw[biayaRow]?.[COL_I]   || 0) : 0;
+    const piutang    = piutangRow !== null ? (raw[piutangRow]?.[COL_I] || 0) : 0;
+    const saldoAmpra = biayaRow   !== null ? (raw[biayaRow]?.[COL_Z]   || 0) : 0;
+
+    // Saldo Kas: nilai kolom I pertama dengan kolom D KOSONG, setelah baris "pertamina"
+    let saldoKas = 0;
+    if (pertaminaRow !== null) {
+      for (let r = pertaminaRow + 1; r < endIdx; r++) {
+        const d = raw[r]?.[COL_D];
+        const v = raw[r]?.[COL_I];
+        if ((d === null || d === undefined || d === '') && typeof v === 'number') {
+          saldoKas = v;
+          break;
+        }
+      }
+    }
+
+    const tgl = thn + '-' + String(bln).padStart(2,'0') + '-' + String(tglNum).padStart(2,'0');
 
     parsedRows.push({
-      tanggal:      tgl,
-      vol_pertalite: nums[2] || nums[3] || 0,
-      vol_pertamax:  nums[4] || nums[5] || 0,
-      vol_solar:     nums[6] || nums[7] || 0,
-      vol_dexlite:   nums[8] || nums[9] || 0,
-      biaya_spbu:    nums[12] || nums[11] || 0,
-      piutang:       nums[13] || 0,
-      saldo_kas:     nums[14] || 0,
-      saldo_ampra:   nums[15] || 0,
-      laba_harian:   nums[16] || 0,
+      tanggal: tgl,
+      vol_pertalite: volPertalite || 0,
+      vol_pertamax:  volPertamax || 0,
+      vol_solar:     volSolar || 0,
+      vol_dexlite:   volDexlite || 0,
+      vol_pxturbo:   volPxTurbo || 0,
+      biaya_spbu:    biayaSpbu || 0,
+      piutang:       piutang || 0,
+      saldo_kas:     saldoKas || 0,
+      saldo_ampra:   saldoAmpra || 0,
+      total_penjualan_excel: totalJual || 0, // untuk validasi preview saja
     });
   });
 
   if (!parsedRows.length) {
-    showAlert('alert-upload', 'err', 'Tidak ada data yang bisa dibaca. Pastikan format file benar.');
+    showAlert('alert-upload', 'err', 'Tidak ada data valid yang bisa dibaca untuk periode ' + BULAN[bln] + ' ' + thn + '.');
     return;
+  }
+
+  if (skippedInvalidDate > 0) {
+    showAlert('alert-upload', 'info', skippedInvalidDate + ' baris tanggal tidak valid untuk ' + BULAN[bln] + ' ' + thn + ' (misal tanggal 31 di bulan yang hanya 30 hari) — otomatis dilewati.');
   }
 
   showPreview();
@@ -1860,10 +1943,20 @@ function showPreview() {
   card.style.display = 'block';
   actions.style.display = 'flex';
 
+  // Cek validasi: bandingkan total hitung sistem vs total tercatat di Excel
+  const hargaMap = {pertalite:10000, pertamax:12600, solar:6800, dexlite:14500, pxturbo:13350};
+  let anomali = 0;
+  parsedRows.forEach(r => {
+    const hitung = (r.vol_pertalite*hargaMap.pertalite)+(r.vol_pertamax*hargaMap.pertamax)+(r.vol_solar*hargaMap.solar)+(r.vol_dexlite*hargaMap.dexlite)+(r.vol_pxturbo*hargaMap.pxturbo);
+    const selisih = Math.abs(hitung - (r.total_penjualan_excel||0));
+    r._anomali = selisih > 5000; // toleransi kecil utk pembulatan harga campuran (misal harga naik di tengah bulan)
+    if (r._anomali) anomali++;
+  });
+
   table.innerHTML = '<div class="tw" style="max-height:300px;overflow-y:auto"><table>' +
-    '<thead><tr><th>Tanggal</th><th class="tr">Pertalite (L)</th><th class="tr">Pertamax (L)</th><th class="tr">Solar (L)</th><th class="tr">Dexlite (L)</th><th class="tr">Biaya SPBU</th><th class="tr">Saldo Kas</th></tr></thead>' +
-    '<tbody>' + parsedRows.slice(0,10).map(r =>
-      '<tr>' +
+    '<thead><tr><th>Tanggal</th><th class="tr">Pertalite (L)</th><th class="tr">Pertamax (L)</th><th class="tr">Solar (L)</th><th class="tr">Dexlite (L)</th><th class="tr">Biaya SPBU</th><th class="tr">Saldo Kas</th><th class="tc">Cek</th></tr></thead>' +
+    '<tbody>' + parsedRows.slice(0,15).map(r =>
+      '<tr style="'+(r._anomali?'background:var(--orange-light)':'')+'">' +
       '<td>'+r.tanggal+'</td>' +
       '<td class="tr">'+fn(r.vol_pertalite)+'</td>' +
       '<td class="tr">'+fn(r.vol_pertamax)+'</td>' +
@@ -1871,10 +1964,12 @@ function showPreview() {
       '<td class="tr">'+fn(r.vol_dexlite)+'</td>' +
       '<td class="tr">'+rpf(r.biaya_spbu)+'</td>' +
       '<td class="tr">'+rpf(r.saldo_kas)+'</td>' +
+      '<td class="tc">'+(r._anomali?'<span class="bdg bg-o" title="Selisih harga — kemungkinan harga BBM berubah di tanggal ini">⚠</span>':'<span class="bdg bg-g">✓</span>')+'</td>' +
       '</tr>'
     ).join('') +
-    (parsedRows.length > 10 ? '<tr><td colspan="7" style="text-align:center;color:var(--gray-400);padding:12px">... dan '+(parsedRows.length-10)+' baris lainnya</td></tr>' : '') +
-    '</tbody></table></div>';
+    (parsedRows.length > 15 ? '<tr><td colspan="8" style="text-align:center;color:var(--gray-400);padding:12px">... dan '+(parsedRows.length-15)+' baris lainnya</td></tr>' : '') +
+    '</tbody></table></div>' +
+    (anomali > 0 ? '<div class="alrt alrt-warn" style="margin:13px 17px 0"><i class="ti ti-alert-triangle"></i><span>'+anomali+' baris memiliki selisih harga dari standar (Pertalite Rp 10.000, Pertamax Rp 12.600, dst) — kemungkinan harga BBM berubah di tanggal tersebut. Data tetap bisa diimport, harga aktual akan dihitung otomatis oleh sistem.</span></div>' : '');
 }
 
 async function importData() {
@@ -1885,10 +1980,11 @@ async function importData() {
   const btn    = document.getElementById('btn-import');
   const spbu   = S.spbuList.find(s => s.id === spbuId);
   const blnNm  = BULAN[parseInt(bln)];
+  const maxHari = daysInMonth(parseInt(bln), parseInt(thn));
 
-  // Cek duplikat — ambil data existing periode ini
+  // Cek duplikat — ambil data existing periode ini (pakai tanggal akhir bulan yang valid)
   const from = thn+'-'+String(bln).padStart(2,'0')+'-01';
-  const to   = thn+'-'+String(bln).padStart(2,'0')+'-31';
+  const to   = thn+'-'+String(bln).padStart(2,'0')+'-'+String(maxHari).padStart(2,'0');
   const { data: existing } = await db.from('transaksi_harian')
     .select('id').eq('spbu_id', spbuId).gte('tanggal', from).lte('tanggal', to);
 
@@ -1905,11 +2001,24 @@ async function importData() {
       .eq('spbu_id', spbuId).gte('tanggal', from).lte('tanggal', to);
   }
 
-  // Import semua baris
+  // Import semua baris — bersihkan field internal (total_penjualan_excel, _anomali)
+  // yang dipakai untuk preview/validasi tapi BUKAN kolom di tabel database
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner" style="width:16px;height:16px;border-width:2px"></div> Mengimport...';
 
-  const rows = parsedRows.map(r => ({ ...r, spbu_id: spbuId }));
+  const rows = parsedRows.map(r => ({
+    spbu_id: spbuId,
+    tanggal: r.tanggal,
+    vol_pertalite: r.vol_pertalite,
+    vol_pertamax: r.vol_pertamax,
+    vol_solar: r.vol_solar,
+    vol_dexlite: r.vol_dexlite,
+    vol_pxturbo: r.vol_pxturbo || 0,
+    biaya_spbu: r.biaya_spbu,
+    piutang: r.piutang,
+    saldo_kas: r.saldo_kas,
+    saldo_ampra: r.saldo_ampra,
+  }));
 
   // Import per batch 50 baris
   const batchSize = 50;
