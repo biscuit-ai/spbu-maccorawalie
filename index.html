@@ -431,9 +431,7 @@ tfoot td{padding:9px 11px;border-top:2px solid var(--gray-200);font-weight:700;b
       <div class="pg" id="pg-monitor">
         <div class="ph"><h2>Monitor Penjualan</h2><p id="mon-sub">Data penjualan harian</p></div>
         <div class="rf">
-          <select id="mon-bulan" onchange="loadMonitor()">
-            <option value="3">Maret 2026</option><option value="2">Februari 2026</option><option value="1">Januari 2026</option>
-          </select>
+          <select id="mon-bulan" onchange="loadMonitor()"><option value="1">Januari</option><option value="2">Februari</option><option value="3" selected>Maret</option><option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option><option value="7">Juli</option><option value="8">Agustus</option><option value="9">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select>
           <select id="mon-tahun" onchange="loadMonitor()">
             <option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="2020">2020</option>
           </select>
@@ -449,7 +447,18 @@ tfoot td{padding:9px 11px;border-top:2px solid var(--gray-200);font-weight:700;b
       <div class="pg" id="pg-stock">
         <div class="ph"><h2>Laporan Stock BBM</h2><p>Stock Awal · Minyak Masuk · Terjual · Stock Akhir · Losses</p></div>
         <div class="rf">
-          <select id="st-bulan" onchange="loadStock()"><option value="3">Maret 2026</option></select>
+          <select id="st-bulan" onchange="loadStock()"><option value="1">Januari</option>
+<option value="2">Februari</option>
+<option value="3" selected>Maret</option>
+<option value="4">April</option>
+<option value="5">Mei</option>
+<option value="6">Juni</option>
+<option value="7">Juli</option>
+<option value="8">Agustus</option>
+<option value="9">September</option>
+<option value="10">Oktober</option>
+<option value="11">November</option>
+<option value="12">Desember</option></select>
           <select id="st-jenis" onchange="loadStock()">
             <option value="pertalite">Pertalite</option>
             <option value="pertamax">Pertamax</option>
@@ -468,7 +477,18 @@ tfoot td{padding:9px 11px;border-top:2px solid var(--gray-200);font-weight:700;b
       <div class="pg" id="pg-edit-transaksi">
         <div class="ph"><h2>Edit Transaksi</h2><p>Koreksi data penjualan dan biaya harian</p></div>
         <div class="rf">
-          <select id="et-bulan" onchange="loadEditTable()"><option value="3">Maret 2026</option></select>
+          <select id="et-bulan" onchange="loadEditTable()"><option value="1">Januari</option>
+<option value="2">Februari</option>
+<option value="3" selected>Maret</option>
+<option value="4">April</option>
+<option value="5">Mei</option>
+<option value="6">Juni</option>
+<option value="7">Juli</option>
+<option value="8">Agustus</option>
+<option value="9">September</option>
+<option value="10">Oktober</option>
+<option value="11">November</option>
+<option value="12">Desember</option></select>
           <select id="et-tahun" onchange="loadEditTable()">
             <option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="2020">2020</option>
           </select>
@@ -511,9 +531,18 @@ tfoot td{padding:9px 11px;border-top:2px solid var(--gray-200);font-weight:700;b
       <div class="pg" id="pg-monthly">
         <div class="ph"><h2>Monthly Report</h2><p>Rekap bulanan: volume, omset, HPP, dan laba</p></div>
         <div class="rf">
-          <select id="mr-bulan" onchange="loadMonthly()">
-            <option value="3">Maret 2026</option><option value="2">Februari 2026</option><option value="1">Januari 2026</option>
-          </select>
+          <select id="mr-bulan" onchange="loadMonthly()"><option value="1">Januari</option>
+<option value="2">Februari</option>
+<option value="3" selected>Maret</option>
+<option value="4">April</option>
+<option value="5">Mei</option>
+<option value="6">Juni</option>
+<option value="7">Juli</option>
+<option value="8">Agustus</option>
+<option value="9">September</option>
+<option value="10">Oktober</option>
+<option value="11">November</option>
+<option value="12">Desember</option></select>
           <select id="mr-tahun" onchange="loadMonthly()">
             <option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="2020">2020</option>
           </select>
@@ -526,7 +555,18 @@ tfoot td{padding:9px 11px;border-top:2px solid var(--gray-200);font-weight:700;b
       <div class="pg" id="pg-laba-rugi">
         <div class="ph"><h2>Laba Rugi</h2><p>Laporan laba rugi resmi per bulan</p></div>
         <div class="rf">
-          <select id="lr-bulan" onchange="loadLabaRugi()"><option value="3">Maret 2026</option></select>
+          <select id="lr-bulan" onchange="loadLabaRugi()"><option value="1">Januari</option>
+<option value="2">Februari</option>
+<option value="3" selected>Maret</option>
+<option value="4">April</option>
+<option value="5">Mei</option>
+<option value="6">Juni</option>
+<option value="7">Juli</option>
+<option value="8">Agustus</option>
+<option value="9">September</option>
+<option value="10">Oktober</option>
+<option value="11">November</option>
+<option value="12">Desember</option></select>
           <select id="lr-tahun" onchange="loadLabaRugi()">
             <option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="2020">2020</option>
           </select>
@@ -538,21 +578,54 @@ tfoot td{padding:9px 11px;border-top:2px solid var(--gray-200);font-weight:700;b
       <!-- CASHFLOW -->
       <div class="pg" id="pg-cashflow">
         <div class="ph"><h2>Dana Pengadaan BBM</h2><p>Posisi dana kas, rekening ampra, dan DO Pertamina harian</p></div>
-        <div class="rf"><select id="cf-bulan" onchange="loadCashflow()"><option value="3">Maret 2026</option></select></div>
+        <div class="rf"><select id="cf-bulan" onchange="loadCashflow()"><option value="1">Januari</option>
+<option value="2">Februari</option>
+<option value="3" selected>Maret</option>
+<option value="4">April</option>
+<option value="5">Mei</option>
+<option value="6">Juni</option>
+<option value="7">Juli</option>
+<option value="8">Agustus</option>
+<option value="9">September</option>
+<option value="10">Oktober</option>
+<option value="11">November</option>
+<option value="12">Desember</option></select></div>
         <div id="cf-content"></div>
       </div>
 
       <!-- BIAYA -->
       <div class="pg" id="pg-biaya">
         <div class="ph"><h2>Laporan Biaya</h2><p>Rincian biaya operasional dan non operasional</p></div>
-        <div class="rf"><select id="by-bulan" onchange="loadBiaya()"><option value="3">Maret 2026</option></select></div>
+        <div class="rf"><select id="by-bulan" onchange="loadBiaya()"><option value="1">Januari</option>
+<option value="2">Februari</option>
+<option value="3" selected>Maret</option>
+<option value="4">April</option>
+<option value="5">Mei</option>
+<option value="6">Juni</option>
+<option value="7">Juli</option>
+<option value="8">Agustus</option>
+<option value="9">September</option>
+<option value="10">Oktober</option>
+<option value="11">November</option>
+<option value="12">Desember</option></select></div>
         <div id="by-content"></div>
       </div>
 
       <!-- GAJI -->
       <div class="pg" id="pg-gaji">
         <div class="ph"><h2>Gaji Karyawan</h2><p>Rekap penggajian per SPBU per bulan</p></div>
-        <div class="rf"><select id="gj-bulan" onchange="loadGaji()"><option value="3">Maret 2026</option></select></div>
+        <div class="rf"><select id="gj-bulan" onchange="loadGaji()"><option value="1">Januari</option>
+<option value="2">Februari</option>
+<option value="3" selected>Maret</option>
+<option value="4">April</option>
+<option value="5">Mei</option>
+<option value="6">Juni</option>
+<option value="7">Juli</option>
+<option value="8">Agustus</option>
+<option value="9">September</option>
+<option value="10">Oktober</option>
+<option value="11">November</option>
+<option value="12">Desember</option></select></div>
         <div id="gj-content"></div>
       </div>
 
